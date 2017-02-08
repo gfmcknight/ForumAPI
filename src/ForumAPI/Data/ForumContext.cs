@@ -21,5 +21,11 @@ namespace ForumAPI.Data
         public DbSet<Post> Posts { get; set; }
         public DbSet<Thread> Threads { get; set; }
         public DbSet<Picture> Pictures { get; set; }
+        public DbSet<Topic> Topics { get; set; }
+
+        public bool addUser(User user)
+        {
+            if ()
+        }
     }
 }

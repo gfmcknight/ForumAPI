@@ -27,6 +27,7 @@ namespace ForumAPI.Models
         public string SHA256Password { get; set; }
         // A random string attached to the password before encryption.
         public string Salt { get; set; }
+        public int PasswordProtocolVersion { get; set; }
 
         public Picture Portrait { get; set; }
         public int PortraitID { get; set; }
