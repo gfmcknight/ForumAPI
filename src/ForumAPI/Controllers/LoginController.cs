@@ -4,15 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
+// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+
 namespace ForumAPI.Controllers
 {
     /// <summary>
-    /// Placeholder class, to be removed later.
+    /// A controller which verifies logins and creates sessions whereby a user
+    /// can make posts with a single token.
     /// </summary>
     [Route("api/[controller]")]
-    public class ValuesController : Controller
+    public class LoginController : Controller
     {
-        // GET api/values
+        // GET: api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {

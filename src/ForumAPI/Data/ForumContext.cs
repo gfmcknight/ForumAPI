@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ForumAPI.Models;
+using ForumAPI.Utilities;
+using System.Security.Cryptography;
 
 namespace ForumAPI.Data
 {
@@ -23,9 +22,32 @@ namespace ForumAPI.Data
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<Topic> Topics { get; set; }
 
-        public bool addUser(User user)
+        public bool addUser(User user, string password)
         {
-            if ()
+            if (!DataHandler.IsValidEmail(user.Email))
+            {
+                return false;
+            }
+            
+            foreach (User other in Users)
+            {
+                if (user.Name == other.Name)
+                {
+                    return false;
+                }
+            }
+
+            user.Created = new DateTime(DateTime.Now.Ticks);
+            user.PasswordProtocolVersion = 1;
+            user.Salt = DataHandler.GenerateSalt(8);
+
+            SHA256 sha = SHA256.Create();
+            user.SHA256Password = DataHandler.CreateString(
+                sha.ComputeHash(DataHandler.CreateByteArray(password + user.Salt)));
+
+            user.Status = UserStatus.Active;
+
+            return true;
         }
     }
 }

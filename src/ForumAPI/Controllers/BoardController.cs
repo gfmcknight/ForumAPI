@@ -6,8 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
+    ///
 namespace ForumAPI.Controllers
 {
+    /// <summary>
+    /// A controller which can be used for navigation in the ForumAPI.
+    /// </summary>
     [Route("api/[controller]")]
     public class BoardController : Controller
     {

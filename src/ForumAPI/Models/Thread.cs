@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ForumAPI.Models
 {
@@ -11,14 +13,16 @@ namespace ForumAPI.Models
     /// </summary>
     public class Thread
     {
+        [Key]
         public int ID { get; set; }
         public string Title { get; set; }
         public DateTime Created { get; set; }
 
-        public Topic Owner { get; set; }
         public int OwnerID { get; set; }
-        public User Author { get; set; }
+        public Topic Owner { get; set; }
         public int AuthorID { get; set; }
+        public User Author { get; set; }
+        
 
         public ICollection<Post> Posts { get; set; }
     }
