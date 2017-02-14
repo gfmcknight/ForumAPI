@@ -17,13 +17,13 @@ namespace ForumAPI.Models
         public int ID { get; set; }
         public string Title { get; set; }
         public DateTime Created { get; set; }
+        public bool Locked { get; set; }
 
         public int OwnerID { get; set; }
         public Topic Owner { get; set; }
         public int AuthorID { get; set; }
         public User Author { get; set; }
         
-
         public ICollection<Post> Posts { get; set; }
     }
 }

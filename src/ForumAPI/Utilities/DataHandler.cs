@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ namespace ForumAPI.Utilities
         }
 
 
-        private static readonly string saltCharacters =
+        private static readonly string SaltCharacters =
             "ABCDEFGHIJKLMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(){}[];:.<>?/";
 
 
@@ -43,7 +44,7 @@ namespace ForumAPI.Utilities
 
             for (int i = 0; i < length; i++)
             {
-                salt.Append(saltCharacters[random.Next(saltCharacters.Length)]);
+                salt.Append(SaltCharacters[random.Next(SaltCharacters.Length)]);
             }
 
             return salt.ToString();
@@ -57,6 +58,24 @@ namespace ForumAPI.Utilities
         public static string CreateString(byte[] input)
         {
             return Encoding.ASCII.GetString(input);
+        }
+
+        public static void PopulatePasswordData(Models.User user, string password)
+        {
+            user.PasswordProtocolVersion = 1;
+            user.Salt = GenerateSalt(8);
+
+            SHA256 sha = SHA256.Create();
+            user.SHA256Password = CreateString(
+                sha.ComputeHash(DataHandler.CreateByteArray(password + user.Salt)));
+        }
+
+        private static readonly int BytesPerMeg = 1000000;
+        private static readonly int MaxPictureSize = 22 * BytesPerMeg;
+
+        public static bool ValidatePictureSize(byte[] picture)
+        {
+            return picture.Length < MaxPictureSize;
         }
     }
 }

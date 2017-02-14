@@ -16,7 +16,8 @@ namespace ForumAPI.Models
         public string Name { get; set; }
         [Required]
         public string Description { get; set; }
-
+        [Required]
+        public bool AllowsThreads { get; set; }
         
         public int ParentID { get; set; }
         [ForeignKey("ParentID")]

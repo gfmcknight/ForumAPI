@@ -43,11 +43,6 @@ namespace ForumAPI.Models
         public int PasswordProtocolVersion { get; set; }
 
         [Required]
-        public int PortraitID { get; set; }
-        [ForeignKey("PortraitID")]
-        public Picture Portrait { get; set; }
-
-        [Required]
         public bool HasSignature { get; set; }
         public string Signature { get; set; }
 

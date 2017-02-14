@@ -15,10 +15,6 @@ namespace ForumAPI.Models
         public string Text { get; set; }
         public DateTime Created { get; set; }
 
-        public bool HasAttachment { get; set; }
-        public Picture Attachment { get; set; }
-        public int AttachmentID { get; set; }
-
         // The Signature and HasSignature properties are copied from the user
         // at the time of post creation, so that when the user changes their
         // signature, old signatures remain.
