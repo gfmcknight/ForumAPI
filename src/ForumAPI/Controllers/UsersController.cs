@@ -16,7 +16,7 @@ namespace ForumAPI.Controllers
     {
         // GET api/values/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public string Get(int id)
         {
             return null;
         }

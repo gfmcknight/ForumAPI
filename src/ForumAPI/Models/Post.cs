@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,9 +23,13 @@ namespace ForumAPI.Models
         public bool HasSignature { get; set; }
         public string Signature { get; set; }
 
-        public Thread Owner { get; set; }
         public int OwnerID { get; set; }
-        public User Author { get; set; }
+        [ForeignKey("OwnerID")] [JsonIgnore]
+        public Thread Owner { get; set; }
+
         public int AuthorID { get; set; }
+        [ForeignKey("AuthorID")] [JsonIgnore]
+        public User Author { get; set; }
+        
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ForumAPI.Models;
 using ForumAPI.Utilities;
+using System.Collections.Generic;
 
 namespace ForumAPI.Data
 {

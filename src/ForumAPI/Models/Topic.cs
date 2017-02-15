@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace ForumAPI.Models
 {
@@ -20,10 +21,12 @@ namespace ForumAPI.Models
         public bool AllowsThreads { get; set; }
         
         public int ParentID { get; set; }
-        [ForeignKey("ParentID")]
+        [JsonIgnore] [ForeignKey("ParentID")]
         public Topic Parent { get; set; }
         
+        [InverseProperty("Parent")]
         public ICollection<Topic> Topics { get; set; }
+        [InverseProperty("Owner")] [JsonIgnore]
         public ICollection<Thread> Threads { get; set; }
     }
 }

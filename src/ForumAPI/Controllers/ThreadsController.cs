@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using ForumAPI.Data;
+using Newtonsoft.Json;
+using ForumAPI.Models;
+using ForumAPI.Utilities;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,24 +19,25 @@ namespace ForumAPI.Controllers
     [Route("api/[controller]")]
     public class ThreadsController : Controller
     {
-        // GET: api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        private ForumContext database; 
 
         // GET api/values/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
-            return "value";
+            Thread thread = database.GetThread(id);
+            if (thread == null)
+            {
+                return Errors.NoSuchElement;
+            }
+            return JsonConvert.SerializeObject(thread);
         }
 
-        // POST api/values
+        // POST api/values/5
         [HttpPost]
-        public void Post([FromBody]string value)
+        public void Post([FromBody]string session, [FromBody]Thread thread)
         {
+
         }
 
         // PUT api/values/5

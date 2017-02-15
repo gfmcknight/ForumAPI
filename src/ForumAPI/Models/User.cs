@@ -24,7 +24,7 @@ namespace ForumAPI.Models
 
         [Required]
         public string Name { get; set; }
-        [Required]
+        [Required] [JsonIgnore]
         public string Email { get; set; }
 
         public DateTime Created { get; set; }
@@ -46,7 +46,9 @@ namespace ForumAPI.Models
         public bool HasSignature { get; set; }
         public string Signature { get; set; }
 
+        [InverseProperty("Author")] [JsonIgnore]
         public ICollection<Thread> Threads { get; set; }
+        [InverseProperty("Author")] [JsonIgnore]
         public ICollection<Post> Posts { get; set; }
     }
 }
