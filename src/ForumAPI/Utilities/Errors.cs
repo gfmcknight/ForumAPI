@@ -12,5 +12,6 @@ namespace ForumAPI.Utilities
         public static readonly string MissingFields = "ItemNotComplete";
         public static readonly string SessionTimeout = "LoginTimeout";
         public static readonly string SessionNotFound = "LoginTimeout";
+        public static readonly string PermissionDenied = "PermissionDenied";
     }
 }
