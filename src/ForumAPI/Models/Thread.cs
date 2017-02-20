@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace ForumAPI.Models
@@ -16,18 +13,22 @@ namespace ForumAPI.Models
     {
         [Key]
         public int ID { get; set; }
+        [JsonRequired]
         public string Title { get; set; }
         public DateTime Created { get; set; }
         public bool Locked { get; set; }
 
+        [JsonRequired]
         public int OwnerID { get; set; }
         [JsonIgnore]
         public Topic Owner { get; set; }
 
+        [JsonRequired]
         public int AuthorID { get; set; }
         [JsonIgnore]
         public User Author { get; set; }
         
+        [JsonIgnore]
         public ICollection<Post> Posts { get; set; }
     }
 }

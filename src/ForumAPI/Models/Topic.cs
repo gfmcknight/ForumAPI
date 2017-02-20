@@ -13,11 +13,11 @@ namespace ForumAPI.Models
         [Key]
         public int ID { get; set; }
 
-        [Required]
+        [JsonRequired]
         public string Name { get; set; }
-        [Required]
+        [JsonRequired]
         public string Description { get; set; }
-        [Required]
+        [JsonRequired]
         public bool AllowsThreads { get; set; }
         
         public int ParentID { get; set; }

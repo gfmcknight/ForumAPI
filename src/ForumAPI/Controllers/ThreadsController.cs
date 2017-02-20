@@ -23,27 +23,45 @@ namespace ForumAPI.Controllers
         private ForumContext database;
         private LoginSessionService logins;
 
-        // GET api/values/5
+        // GET api/threads/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
             Thread thread = database.GetThread(id);
             if (thread == null)
             {
-                return Errors.NoSuchElement;
+                return NotFound(Errors.NoSuchElement);
             }
-            return JsonConvert.SerializeObject(thread);
+            return new ObjectResult(thread);
         }
 
-        // POST api/values
-        [HttpPost]
-        public string Post([FromBody]string session, [FromBody]Thread thread)
+        // GET api/threads/5/posts
+        [HttpGet("{id}/posts")]
+        public IActionResult GetPosts(int id)
         {
+            Thread thread = database.GetThread(id);
+
+            if (thread == null)
+            {
+                return NotFound(Errors.NoSuchElement);
+            }
+
+            return new ObjectResult(thread.Posts);
+        }
+
+        // POST api/threads
+        [HttpPost]
+        public IActionResult Create([FromBody]string session, [FromBody]Thread thread)
+        {
+            if (thread == null)
+            {
+                return BadRequest(Errors.MissingFields);
+            }
             string error = "";
             User user = logins.GetUser(session, out error);
             if (user == null)
             {
-                return error;
+                return BadRequest(error);
             }
             else
             {
@@ -53,25 +71,82 @@ namespace ForumAPI.Controllers
                     database.AddThread(thread);
                     database.SaveChanges();
                     logins.UpdateLoginAction(session);
-                    return JsonConvert.SerializeObject(thread);
+                    return new ObjectResult(thread);
                 }
                 else
                 {
-                    return Errors.PermissionDenied;
+                    return new ForbidResult(Errors.PermissionDenied);
                 }
             }
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+
+        // POST api/threads/5/posts
+        [HttpPost("{id}/posts")]
+        public IActionResult AddPost(int id, [FromBody]string session, [FromBody]Post post)
         {
+            if (post == null)
+            {
+                return BadRequest(Errors.MissingFields);
+            }
+
+            if (database.GetThread(id) == null)
+            {
+                return NotFound(Errors.NoSuchElement);
+            }
+
+            post.OwnerID = id;
+
+            string error = "";
+            User user = logins.GetUser(session, out error);
+            if (user == null)
+            {
+                return BadRequest(error);
+            }
+            else
+            {
+                if (user.Status >= UserStatus.Active)
+                {
+                    post.AuthorID = user.ID;
+                    database.AddPost(post);
+                    database.SaveChanges();
+                    logins.UpdateLoginAction(session);
+                    return new ObjectResult(post);
+                }
+                else
+                {
+                    return new ForbidResult(Errors.PermissionDenied);
+                }
+            }
         }
 
-        // DELETE api/values/5
+        // DELETE api/threads/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id, [FromBody]string session)
         {
+            Thread thread = database.GetThread(id);
+            if (thread == null)
+            {
+                return NotFound(Errors.NoSuchElement);
+            }
+            string error = "";
+            User user = logins.GetUser(session, out error);
+            if (user == null)
+            {
+                return BadRequest(error);
+            }
+            else
+            {
+                if (thread.Author == user || user.Status >= UserStatus.Moderator)
+                {
+                    return new ObjectResult(database.RemoveThread(thread));
+                }
+                else
+                {
+                    return new ForbidResult(Errors.PermissionDenied);
+                }
+            }
+
         }
     }
 }

@@ -22,9 +22,10 @@ namespace ForumAPI.Models
         [Key]
         public int ID { get; set; }
 
-        [Required]
+        [JsonRequired]
         public string Name { get; set; }
-        [Required] [JsonIgnore]
+        // Email attribute is checked when the model is created, so there is no
+        // required JSON Annotation
         public string Email { get; set; }
 
         public DateTime Created { get; set; }
