@@ -139,7 +139,10 @@ namespace ForumAPI.Controllers
             {
                 if (thread.Author == user || user.Status >= UserStatus.Moderator)
                 {
-                    return new ObjectResult(database.RemoveThread(thread));
+                    database.RemoveThread(thread);
+                    database.SaveChanges();
+                    logins.UpdateLoginAction(session);
+                    return new ObjectResult(thread);
                 }
                 else
                 {

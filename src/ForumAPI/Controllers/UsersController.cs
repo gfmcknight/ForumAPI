@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ForumAPI.Services;
 using ForumAPI.Data;
+using ForumAPI.Models;
+using ForumAPI.Utilities;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,9 +30,16 @@ namespace ForumAPI.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return null;
+            User user = database.GetUser(id);
+            
+            if (user == null)
+            {
+                return NotFound(Errors.NoSuchElement);
+            }
+
+            return new ObjectResult(user);
         }
 
         // POST api/values
