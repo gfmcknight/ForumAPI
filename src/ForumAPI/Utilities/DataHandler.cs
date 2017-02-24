@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ForumAPI.Utilities
 {
@@ -19,6 +17,11 @@ namespace ForumAPI.Utilities
 
         public static bool IsValidEmail(string email)
         {
+            if (email == null)
+            {
+                return false;
+            }
+
             string[] parsedEmail = email.Split('@');
 
             if (parsedEmail.Length != 2)
@@ -76,6 +79,11 @@ namespace ForumAPI.Utilities
         public static bool ValidatePictureSize(byte[] picture)
         {
             return picture.Length < MaxPictureSize;
+        }
+
+        public static bool VerifyPassword(string password)
+        {
+            return password.Length > 8;
         }
     }
 }

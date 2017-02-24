@@ -23,19 +23,6 @@ namespace ForumAPI.Data
 
         public bool AddUser(User user, string password)
         {
-            if (!DataHandler.IsValidEmail(user.Email))
-            {
-                return false;
-            }
-
-            foreach (User other in Users)
-            {
-                if (user.Name == other.Name || user.Email == other.Email)
-                {
-                    return false;
-                }
-            }
-
             user.Created = new DateTime(DateTime.Now.Ticks);
             DataHandler.PopulatePasswordData(user, password);
 
@@ -105,7 +92,6 @@ namespace ForumAPI.Data
             post.Created = new DateTime(DateTime.Now.Ticks);
 
             Posts.Add(post);
-
 
             return true;
         }

@@ -39,13 +39,41 @@ namespace ForumAPI.Controllers
                 return NotFound(Errors.NoSuchElement);
             }
 
+            user.Email = null;
+
             return new ObjectResult(user);
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public IActionResult Post([FromBody]User user, [FromBody]string password)
         {
+            if (user == null)
+            {
+                return BadRequest(Errors.MissingFields);
+            }
+
+            if (!DataHandler.IsValidEmail(user.Email))
+            {
+                return BadRequest(Errors.InvalidEmail);
+            }
+
+            foreach (User other in database.Users)
+            {
+                if (user.Name == other.Name || user.Email == other.Email)
+                {
+                    return BadRequest(Errors.AlreadyExists);
+                }
+            }
+
+            if (!DataHandler.VerifyPassword(password))
+            {
+                return BadRequest(Errors.WeakPassword);
+            }
+
+            database.AddUser(user, password);
+            database.SaveChanges();
+            return new ObjectResult(user);
         }
 
         // PATCH api/values/5
