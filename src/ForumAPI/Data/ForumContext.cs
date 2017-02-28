@@ -38,6 +38,18 @@ namespace ForumAPI.Data
             return Users.Find(id);
         }
 
+        public User GetUser(string username)
+        {
+            foreach (User user in Users)
+            {
+                if (user.Name == username)
+                {
+                    return user;
+                }
+            }
+            return null;
+        }
+
         // A User's profile should never be removed, merely deactivated.
         // Only used in order to update a user.
         public User RemoveUser(User user)
@@ -46,42 +58,31 @@ namespace ForumAPI.Data
             return user;
         }
 
-        public bool UpdateUser(User user, string password)
+        public bool UpdateUser(User user, string password, UserStatus requestPermission)
         {
-            User oldProfile = GetUser(user.ID);
-            if (oldProfile == null)
+            User profile = GetUser(user.ID);
+            if (profile == null)
             {
                 return false;
             }
 
-            user.Created = oldProfile.Created;
-            user.Status = oldProfile.Status;
-            if (password == "")
-            {
-                user.Salt = oldProfile.Salt;
-                user.SHA256Password = oldProfile.SHA256Password;
-                user.PasswordProtocolVersion = oldProfile.PasswordProtocolVersion;
-            }
-            else
-            {
-                DataHandler.PopulatePasswordData(user, password);
+            if (requestPermission >= UserStatus.Moderator && 
+                user.Status != UserStatus.Administrator) {
+
+                profile.Status = user.Status;
             }
 
-            Remove(oldProfile);
+            if (password != "")
+            {
+                DataHandler.PopulatePasswordData(profile, password);
+            }
 
-            Users.Add(user);
+            profile.Name = user.Name;
+            profile.Email = user.Email;
+            profile.HasSignature = user.HasSignature;
+            profile.Signature = user.Signature;
 
             return true;
-        }
-
-        public void ChangeUserStatus(UserStatus status, int id)
-        {
-            User user = GetUser(id);
-            if (user != null)
-            {
-                user.Status = status;
-            }
-            
         }
 
         public bool AddPost(Post post)

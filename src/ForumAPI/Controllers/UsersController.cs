@@ -21,7 +21,7 @@ namespace ForumAPI.Controllers
 
         LoginSessionService logins;
         ForumContext database;
-        
+
         public UsersController(LoginSessionService logins, ForumContext database)
         {
             this.logins = logins;
@@ -33,7 +33,7 @@ namespace ForumAPI.Controllers
         public IActionResult Get(int id)
         {
             User user = database.GetUser(id);
-            
+
             if (user == null)
             {
                 return NotFound(Errors.NoSuchElement);
@@ -76,17 +76,79 @@ namespace ForumAPI.Controllers
             return new ObjectResult(user);
         }
 
-        // PATCH api/values/5
+        // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public IActionResult Put(int id, [FromBody]User user, [FromBody]string password, [FromBody]string session)
         {
+            if (database.GetUser(id) == null)
+            {
+                return NotFound(Errors.NoSuchElement);
+            }
+
+            if (user == null)
+            {
+                return BadRequest(Errors.MissingFields);
+            }
+
+            string error = "";
+            User requester = logins.GetUser(session, out error);
+
+            if (session == null)
+            {
+                return BadRequest(error);
+            }
+            else
+            {
+                if (user.ID != requester.ID && (password != null && password != ""))
+                {
+                    return new ForbidResult(Errors.PermissionDenied);
+                }
+                else
+                {
+                    if (requester.ID == user.ID || requester.Status >= UserStatus.Moderator)
+                    {
+                        database.UpdateUser(user, password, requester.Status);
+                        database.SaveChanges();
+                        return new ObjectResult(database.GetUser(user.ID));
+                    }
+                    else
+                    {
+                        return new ForbidResult(Errors.PermissionDenied);
+                    }
+                }
+            }
+
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete([FromBody]string session, int id)
+        public IActionResult Delete(int id, [FromBody]string session)
         {
+            User user = database.GetUser(id);
+            if (user == null)
+            {
+                return NotFound(Errors.NoSuchElement);
+            }
 
+            string error = "";
+            User requester = logins.GetUser(session, out error);
+            if (requester == null)
+            {
+                return BadRequest(error);
+            }
+            else
+            {
+                if (requester.Status == UserStatus.Administrator)
+                {
+                    database.Remove(user);
+                    database.SaveChanges();
+                    return new ObjectResult(user);
+                }
+                else
+                {
+                    return new ForbidResult(Errors.PermissionDenied);
+                }
+            }
         }
     }
 }

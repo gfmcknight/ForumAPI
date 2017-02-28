@@ -23,7 +23,12 @@ namespace ForumAPI.Controllers
         private ForumContext database;
         private LoginSessionService logins;
 
-        // GET api/threads/5
+        public ThreadsController(LoginSessionService logins, ForumContext database)
+        {
+            this.logins = logins;
+            this.database = database;
+        }
+
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -35,7 +40,6 @@ namespace ForumAPI.Controllers
             return new ObjectResult(thread);
         }
 
-        // GET api/threads/5/posts
         [HttpGet("{id}/posts")]
         public IActionResult GetPosts(int id)
         {
@@ -49,7 +53,6 @@ namespace ForumAPI.Controllers
             return new ObjectResult(thread.Posts);
         }
 
-        // POST api/threads
         [HttpPost]
         public IActionResult Create([FromBody]string session, [FromBody]Thread thread)
         {
@@ -80,8 +83,6 @@ namespace ForumAPI.Controllers
             }
         }
 
-
-        // POST api/threads/5/posts
         [HttpPost("{id}/posts")]
         public IActionResult AddPost(int id, [FromBody]string session, [FromBody]Post post)
         {
@@ -120,7 +121,6 @@ namespace ForumAPI.Controllers
             }
         }
 
-        // DELETE api/threads/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id, [FromBody]string session)
         {

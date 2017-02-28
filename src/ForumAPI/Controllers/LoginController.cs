@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using ForumAPI.Services;
+using ForumAPI.Data;
+using ForumAPI.Models;
+using ForumAPI.Utilities;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,36 +19,45 @@ namespace ForumAPI.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        // GET: api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
+        LoginSessionService logins;
+        ForumContext database;
+
+        public LoginController(LoginSessionService logins, ForumContext database)
         {
-            return new string[] { "value1", "value2" };
+            this.logins = logins;
+            this.database = database;
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
+        /// <summary>
+        /// Logs a user in with a username and a password.
+        /// </summary>
+        /// <param name="username">The user's username or email.</param>
+        /// <param name="password">The user's password.</param>
+        /// <returns>The session token that gets created.</returns>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public string Post([FromBody]string username, [FromBody]string password)
         {
+            User user = database.GetUser(username);
+            if (user == null)
+            {
+                // Don't return a token if they use an invalid login and handle
+                // issue on the client side.
+                return "";
+            }
+            if (DataHandler.IsCorrectPassword(password, user))
+            {
+                return logins.AddLogin(user);
+            }
+            else
+            {
+                return "";
+            }
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpDelete("{session}")]
+        public void Delete(string session)
         {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            logins.
         }
     }
 }

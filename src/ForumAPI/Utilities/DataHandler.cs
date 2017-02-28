@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ForumAPI.Models;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -35,7 +36,6 @@ namespace ForumAPI.Utilities
             return true;
         }
 
-
         private static readonly string SaltCharacters =
             "ABCDEFGHIJKLMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(){}[];:.<>?/";
 
@@ -63,14 +63,29 @@ namespace ForumAPI.Utilities
             return Encoding.ASCII.GetString(input);
         }
 
-        public static void PopulatePasswordData(Models.User user, string password)
+        public static void PopulatePasswordData(User user, string password)
         {
             user.PasswordProtocolVersion = 1;
             user.Salt = GenerateSalt(8);
 
-            SHA256 sha = SHA256.Create();
-            user.SHA256Password = CreateString(
-                sha.ComputeHash(DataHandler.CreateByteArray(password + user.Salt)));
+            user.SHA256Password = getHash(user.Name + user.Salt, user.PasswordProtocolVersion);
+        }
+
+        public static bool IsCorrectPassword(string rawPassword, User user)
+        {
+            return (getHash(rawPassword + user.Salt, user.PasswordProtocolVersion) ==
+                user.SHA256Password);
+        }
+
+        private static string getHash(string input, int protocol)
+        {
+            switch (protocol) {
+                case 1:
+                    SHA256 sha = SHA256.Create();
+                    return CreateString(sha.ComputeHash(CreateByteArray(input)));
+                default:
+                    return "";
+            }
         }
 
         private static readonly int BytesPerMeg = 1000000;

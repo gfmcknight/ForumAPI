@@ -16,7 +16,7 @@ namespace ForumAPI.Services
         private static readonly long TimeoutTime = (long)10000000 * 3600 * 3;
 
         // TODO: Make this a concurrent dictionary
-        private Dictionary<String, LoginSession> userLogins;
+        private Dictionary<string, LoginSession> userLogins;
 
         public LoginSessionService()
         {
@@ -98,6 +98,15 @@ namespace ForumAPI.Services
                 error = Errors.SessionNotFound;
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Removes a login session from the 
+        /// </summary>
+        /// <param name="token">The token associated with the login.</param>
+        public void Logout(string token)
+        {
+            userLogins.Remove(token);
         }
 
         /// <summary>

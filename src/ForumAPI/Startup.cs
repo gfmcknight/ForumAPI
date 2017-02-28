@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ForumAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using ForumAPI.Services;
 
 namespace ForumAPI
 {
@@ -43,6 +44,8 @@ namespace ForumAPI
 
             services.AddDbContext<ForumContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddSingleton<LoginSessionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -51,6 +54,8 @@ namespace ForumAPI
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            DbInitializer.Initialize(context);
 
             app.UseMvc();
         }

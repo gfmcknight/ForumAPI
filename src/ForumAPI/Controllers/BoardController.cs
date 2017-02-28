@@ -22,14 +22,18 @@ namespace ForumAPI.Controllers
         ForumContext database;
         LoginSessionService logins;
 
-        // GET: api/topics
+        public BoardController(LoginSessionService logins, ForumContext database)
+        {
+            this.logins = logins;
+            this.database = database;
+        }
+
         [HttpGet]
         public IActionResult GetRoot()
         {
             return new ObjectResult(database.GetTopic(0));
         }
 
-        // GET api/topics/5/threads
         [HttpGet("{id}/threads")]
         public IActionResult Get(int id)
         {
@@ -43,7 +47,6 @@ namespace ForumAPI.Controllers
             return new ObjectResult(topic.Threads);
         }
 
-        // POST api/topics
         [HttpPost]
         public IActionResult Post([FromBody]string session, [FromBody]Topic topic)
         {
@@ -76,7 +79,6 @@ namespace ForumAPI.Controllers
             
         }
 
-        // DELETE api/topics/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id, [FromBody]string session)
         {
