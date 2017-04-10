@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ForumAPI.Models;
 using ForumAPI.Utilities;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ForumAPI.Data
 {
@@ -13,7 +14,25 @@ namespace ForumAPI.Data
     {
         public ForumContext(DbContextOptions<ForumContext> options) : base(options)
         {
+            
+        }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Topic>()
+                .HasOne(p => p.Parent)
+                .WithMany(p => p.SubTopics)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.Owner)
+                .WithMany(p => p.Posts)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.Author)
+                .WithMany(p => p.Posts)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<User> Users { get; set; }

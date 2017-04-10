@@ -57,7 +57,12 @@ namespace ForumAPI.Controllers
         [HttpDelete("{session}")]
         public void Delete(string session)
         {
-            logins.
+            string error = "";
+            User user = logins.GetUser(session, out error);
+            if (user != null)
+            {
+                logins.Logout(session);
+            }
         }
     }
 }

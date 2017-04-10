@@ -13,7 +13,7 @@ namespace ForumAPI.Services
     /// </summary>
     public class LoginSessionService
     {
-        private static readonly long TimeoutTime = (long)10000000 * 3600 * 3;
+        private static readonly int TimeoutTime = 3;
 
         // TODO: Make this a concurrent dictionary
         private Dictionary<string, LoginSession> userLogins;
@@ -56,7 +56,7 @@ namespace ForumAPI.Services
             {
                 TimeSpan sinceLastAction = 
                     new TimeSpan(DateTime.Now.Ticks - login.LastAction.Ticks);
-                if (sinceLastAction.Hours >= 3)
+                if (sinceLastAction.Hours >= TimeoutTime)
                 {
                     userLogins.Remove(login.Token);
                 }
@@ -82,7 +82,7 @@ namespace ForumAPI.Services
             {
                 TimeSpan sinceLastAction = 
                     new TimeSpan(DateTime.Now.Ticks - login.LastAction.Ticks);
-                if (sinceLastAction.Hours >= 3)
+                if (sinceLastAction.Hours >= TimeoutTime)
                 {
                     error = Errors.SessionTimeout;
                     userLogins.Remove(login.Token);

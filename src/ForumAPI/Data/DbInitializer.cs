@@ -30,7 +30,7 @@ namespace ForumAPI.Data
             context.AddTopic(mainBoard);
             // This password only exists momentarily when the system is being created.
             context.AddUser(master, "DefaultPassword123");
-            context.ChangeUserStatus(UserStatus.Administrator, master.ID);
+            master.Status = UserStatus.Administrator;
 
             context.SaveChanges();
         }
