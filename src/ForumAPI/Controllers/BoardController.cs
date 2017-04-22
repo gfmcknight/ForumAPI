@@ -31,7 +31,7 @@ namespace ForumAPI.Controllers
         [HttpGet]
         public IActionResult GetRoot()
         {
-            return new ObjectResult(database.GetTopic(0));
+            return new ObjectResult(database.GetTopic(1));
         }
 
         [HttpGet("{id}/threads")]

@@ -10,18 +10,18 @@ namespace ForumAPI.Data
     /// <summary>
     /// Interface for getting and storing information from the database.
     /// </summary>
-    public class ForumContext : DbContext
+    public class ForumContext : DbContext, IForumContext
     {
         public ForumContext(DbContextOptions<ForumContext> options) : base(options)
         {
-            
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Topic>()
-                .HasOne(p => p.Parent)
-                .WithMany(p => p.SubTopics)
+            modelBuilder.Entity<Thread>()
+                .HasOne(p => p.Author)
+                .WithMany(p => p.Threads)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Post>()
@@ -39,6 +39,7 @@ namespace ForumAPI.Data
         public DbSet<Post> Posts { get; set; }
         public DbSet<Thread> Threads { get; set; }
         public DbSet<Topic> Topics { get; set; }
+        public DbSet<TopicRelation> TopicRelations { get; set; }
 
         public bool AddUser(User user, string password)
         {
@@ -83,12 +84,6 @@ namespace ForumAPI.Data
             if (profile == null)
             {
                 return false;
-            }
-
-            if (requestPermission >= UserStatus.Moderator && 
-                user.Status != UserStatus.Administrator) {
-
-                profile.Status = user.Status;
             }
 
             if (password != "")
@@ -158,11 +153,6 @@ namespace ForumAPI.Data
         // Note: deletes all posts in thread
         public Thread RemoveThread(Thread thread)
         {
-            foreach (Post post in thread.Posts)
-            {
-                RemovePost(post);
-            }
-
             Threads.Remove(thread);
 
             return thread;
@@ -183,6 +173,12 @@ namespace ForumAPI.Data
         {
             Topics.Remove(topic);
             return topic;
+        }
+
+        public bool AddTopicRelation(TopicRelation relation)
+        {
+            TopicRelations.Add(relation);
+            return true;
         }
     }
 }

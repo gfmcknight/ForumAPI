@@ -24,12 +24,14 @@ namespace ForumAPI.Models
         [JsonRequired]
         public bool AllowsThreads { get; set; }
         
-        public int ParentID { get; set; }
-        [ForeignKey("ParentID")] [JsonIgnore]
-        public Topic Parent { get; set; }
-        
+        [InverseProperty("Child")]
+        [JsonIgnore]
+        public ICollection<TopicRelation> Parents { get; set; }
+
         [InverseProperty("Parent")]
-        public ICollection<Topic> SubTopics { get; set; }
+        [JsonIgnore]
+        public ICollection<TopicRelation> SubTopics { get; set; }
+
         [InverseProperty("Owner")] [JsonIgnore]
         public ICollection<Thread> Threads { get; set; }
     }

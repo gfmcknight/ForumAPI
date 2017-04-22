@@ -11,7 +11,7 @@ namespace ForumAPI.Services
     /// A service that keeps track of users that are logged in to the
     /// API.
     /// </summary>
-    public class LoginSessionService
+    public class LoginSessionService : ILoginSessionService
     {
         private static readonly int TimeoutTime = 3;
 
