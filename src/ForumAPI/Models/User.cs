@@ -17,6 +17,7 @@ namespace ForumAPI.Models
     /// The model for a user. Contains both login information and posting
     /// information.
     /// </summary>
+    [Serializable]
     public class User
     {
         [Key]

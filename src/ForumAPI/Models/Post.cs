@@ -8,6 +8,7 @@ namespace ForumAPI.Models
     /// The basic unit of communication in a forum. Belongs to a user and a
     /// thread in which the post occurs.
     /// </summary>
+    [Serializable]
     public class Post
     {
         public int ID { get; set; }

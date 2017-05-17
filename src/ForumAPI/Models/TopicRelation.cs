@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace ForumAPI.Models
 {
+    [Serializable]
     public class TopicRelation
     {
         [Key]

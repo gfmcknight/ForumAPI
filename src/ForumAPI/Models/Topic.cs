@@ -12,6 +12,7 @@ namespace ForumAPI.Models
     /// Represents a section of the forum to which many different threads
     /// can be posted, as well as subtopics.
     /// </summary>
+    [Serializable]
     public class Topic
     {
         [Key]

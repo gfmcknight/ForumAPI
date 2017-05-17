@@ -19,10 +19,10 @@ namespace ForumAPI.Controllers
     [Route("api/[controller]")]
     public class BoardController : Controller
     {
-        ForumContext database;
-        LoginSessionService logins;
+        IForumContext database;
+        ILoginSessionService logins;
 
-        public BoardController(LoginSessionService logins, ForumContext database)
+        public BoardController(ILoginSessionService logins, IForumContext database)
         {
             this.logins = logins;
             this.database = database;

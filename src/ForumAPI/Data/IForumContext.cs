@@ -24,5 +24,6 @@ namespace ForumAPI.Data
         Topic GetTopic(int id);
         Topic RemoveTopic(Topic topic);
         bool AddTopicRelation(TopicRelation relation);
+        int SaveChanges();
     }
 }

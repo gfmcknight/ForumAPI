@@ -9,6 +9,7 @@ namespace ForumAPI.Models
     /// Represents a "conversation" between users on a given topic. When
     /// created, an initial post by the owner must be given.
     /// </summary>
+    [Serializable]
     public class Thread
     {
         [Key]
