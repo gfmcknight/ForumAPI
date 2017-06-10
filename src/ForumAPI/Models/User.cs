@@ -10,7 +10,11 @@ namespace ForumAPI.Models
 {
     public enum UserStatus
     {
-        Administrator, Moderator, Active, Deactivated, Banned
+        Administrator = 5,
+        Moderator = 4,
+        Active = 3,
+        Deactivated = 2,
+        Banned = 1
     }
 
     /// <summary>

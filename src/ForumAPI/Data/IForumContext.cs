@@ -11,6 +11,7 @@ namespace ForumAPI.Data
         bool AddUser(User user, string password);
         User GetUser(int id);
         User GetUser(string username);
+        IEnumerable<User> GetAllUsers();
         User RemoveUser(User user);
         bool UpdateUser(User user, string password, UserStatus requestPermission);
         bool AddPost(Post post);

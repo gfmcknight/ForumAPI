@@ -6,12 +6,12 @@ using Xunit.Abstractions;
 
 namespace ForumAPITester
 {
-    public class BoardLoggerTest
+    public class BoardControllerTest
     {
         private readonly ITestOutputHelper output;
         private BoardController controller;
 
-        public BoardLoggerTest(ITestOutputHelper output)
+        public BoardControllerTest(ITestOutputHelper output)
         {
             this.output = output;
             ActionLoggerDummy dummy = new ActionLoggerDummy(output);

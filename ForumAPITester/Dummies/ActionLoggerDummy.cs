@@ -1,13 +1,10 @@
 ﻿using ForumAPI.Data;
 using ForumAPI.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using ForumAPI.Models;
-using Xunit;
-using System.Diagnostics;
 using Xunit.Abstractions;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace ForumAPITester.Dummies
 {
@@ -18,7 +15,7 @@ namespace ForumAPITester.Dummies
             ID = 1,
             Name = "Name",
             Email = "Email",
-            Status = UserStatus.Administrator,
+            Status = UserStatus.Active,
             SHA256Password = "Password",
             Salt = "Salt",
             PasswordProtocolVersion = -1,
@@ -101,12 +98,21 @@ namespace ForumAPITester.Dummies
         {
             output.WriteLine("IForumContext.AddUser(User) called.");
             output.WriteLine(JsonConvert.SerializeObject(user));
+            output.WriteLine(password);
             return true;
         }
 
         void ILoginSessionService.ClearTimedOut()
         {
             output.WriteLine("ILoginSessionService.ClearTimedOut() called.");
+        }
+
+        IEnumerable<User> IForumContext.GetAllUsers()
+        {
+            output.WriteLine("IForumContext.GetAllUsers() called.");
+            LinkedList<User> users = new LinkedList<User>();
+            users.AddLast(dummyUser);
+            return users;
         }
 
         Post IForumContext.GetPost(int id)

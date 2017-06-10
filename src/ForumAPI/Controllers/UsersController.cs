@@ -19,10 +19,10 @@ namespace ForumAPI.Controllers
     public class UsersController : Controller
     {
 
-        LoginSessionService logins;
-        ForumContext database;
+        ILoginSessionService logins;
+        IForumContext database;
 
-        public UsersController(LoginSessionService logins, ForumContext database)
+        public UsersController(ILoginSessionService logins, IForumContext database)
         {
             this.logins = logins;
             this.database = database;
@@ -58,7 +58,7 @@ namespace ForumAPI.Controllers
                 return BadRequest(Errors.InvalidEmail);
             }
 
-            foreach (User other in database.Users)
+            foreach (User other in database.GetAllUsers())
             {
                 if (user.Name == other.Name || user.Email == other.Email)
                 {
@@ -78,20 +78,25 @@ namespace ForumAPI.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody]User user, [FromBody]string password, [FromBody]string session)
+        public IActionResult Put([FromBody]User user, [FromBody]string password, [FromBody]string session)
         {
-            if (database.GetUser(id) == null)
-            {
-                return NotFound(Errors.NoSuchElement);
-            }
-
             if (user == null)
             {
                 return BadRequest(Errors.MissingFields);
             }
 
+            if (database.GetUser(user.ID) == null)
+            {
+                return NotFound(Errors.NoSuchElement);
+            }
+
             string error = "";
             User requester = logins.GetUser(session, out error);
+
+            if (requester.Status < UserStatus.Active)
+            {
+                return new ForbidResult(Errors.PermissionDenied);
+            }
 
             if (session == null)
             {
@@ -99,12 +104,15 @@ namespace ForumAPI.Controllers
             }
             else
             {
+                // If the user is requesting a password change, they must be user they
+                // want to apply it to.
                 if (user.ID != requester.ID && (password != null && password != ""))
                 {
                     return new ForbidResult(Errors.PermissionDenied);
                 }
                 else
                 {
+                    // A user can only make a change to themselves or if they are a moderator
                     if (requester.ID == user.ID || requester.Status >= UserStatus.Moderator)
                     {
                         database.UpdateUser(user, password, requester.Status);
@@ -140,7 +148,7 @@ namespace ForumAPI.Controllers
             {
                 if (requester.Status == UserStatus.Administrator)
                 {
-                    database.Remove(user);
+                    database.RemoveUser(user);
                     database.SaveChanges();
                     return new ObjectResult(user);
                 }

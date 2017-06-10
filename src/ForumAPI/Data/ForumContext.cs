@@ -70,6 +70,11 @@ namespace ForumAPI.Data
             return null;
         }
 
+        public IEnumerable<User> GetAllUsers()
+        {
+            return Users;
+        }
+
         // A User's profile should never be removed, merely deactivated.
         // Only used in order to update a user.
         public User RemoveUser(User user)
