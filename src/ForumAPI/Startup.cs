@@ -44,8 +44,10 @@ namespace ForumAPI
 
             services.AddDbContext<ForumContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            // http://www.jerriepelser.com/blog/resolve-dbcontext-as-interface-in-aspnet5-ioc-container/
+            services.AddScoped<IForumContext>(provider => provider.GetService<ForumContext>());
 
-            services.AddSingleton<LoginSessionService>();
+            services.AddSingleton<ILoginSessionService, LoginSessionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

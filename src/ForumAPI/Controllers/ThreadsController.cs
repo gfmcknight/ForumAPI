@@ -20,10 +20,10 @@ namespace ForumAPI.Controllers
     [Route("api/[controller]")]
     public class ThreadsController : Controller
     {
-        private ForumContext database;
-        private LoginSessionService logins;
+        private IForumContext database;
+        private ILoginSessionService logins;
 
-        public ThreadsController(LoginSessionService logins, ForumContext database)
+        public ThreadsController(ILoginSessionService logins, IForumContext database)
         {
             this.logins = logins;
             this.database = database;

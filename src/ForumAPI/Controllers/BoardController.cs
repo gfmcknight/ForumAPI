@@ -43,8 +43,13 @@ namespace ForumAPI.Controllers
             {
                 return NotFound(Errors.NoSuchElement);
             }
-
-            return new ObjectResult(topic.Threads);
+            // Return all threads by which has the most recent (latest) post
+            if (topic.Threads != null)
+            {
+                return new ObjectResult(topic.Threads.OrderByDescending(
+                           t => t.Posts.Count > 1 ? t.Posts.Last().Created : t.Created));
+            }
+            else return new ObjectResult(new LinkedList<Thread>());
         }
 
         [HttpPost]

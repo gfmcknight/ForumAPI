@@ -7,22 +7,31 @@ using Xunit.Abstractions;
 
 namespace ForumAPITester
 {
-    class PostLoggerTest
+    public class PostLoggerTest
     {
         private readonly ITestOutputHelper output;
-        private UsersController controller;
+        private ThreadsController controller;
 
         public PostLoggerTest(ITestOutputHelper output)
         {
             this.output = output;
             ActionLoggerDummy dummy = new ActionLoggerDummy(output);
-            controller = new UsersController(dummy, dummy);
+            controller = new ThreadsController(dummy, dummy);
         }
 
         [Fact]
         public void TestGet()
         {
+            controller.Get(1);
+            controller.Get(2);
+            controller.GetPosts(1);
+            controller.GetPosts(2);
+        }
 
+        [Fact]
+        public void TestCreate()
+        {
+            controller.Create("session", ActionLoggerDummy.dummyThread);
         }
     }
 }
