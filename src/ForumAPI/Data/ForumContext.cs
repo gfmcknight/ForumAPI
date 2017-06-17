@@ -4,6 +4,7 @@ using ForumAPI.Models;
 using ForumAPI.Utilities;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System.Linq;
 
 namespace ForumAPI.Data
 {
@@ -60,14 +61,7 @@ namespace ForumAPI.Data
 
         public User GetUser(string username)
         {
-            foreach (User user in Users)
-            {
-                if (user.Name == username)
-                {
-                    return user;
-                }
-            }
-            return null;
+            return Users.FirstOrDefault(t => t.Name.ToUpper() == username.ToUpper());
         }
 
         public IEnumerable<User> GetAllUsers()

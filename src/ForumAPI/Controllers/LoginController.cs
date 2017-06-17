@@ -19,10 +19,10 @@ namespace ForumAPI.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        LoginSessionService logins;
-        ForumContext database;
+        ILoginSessionService logins;
+        IForumContext database;
 
-        public LoginController(LoginSessionService logins, ForumContext database)
+        public LoginController(ILoginSessionService logins, IForumContext database)
         {
             this.logins = logins;
             this.database = database;
@@ -35,16 +35,21 @@ namespace ForumAPI.Controllers
         /// <param name="password">The user's password.</param>
         /// <returns>The session token that gets created.</returns>
         [HttpPost]
-        public string Post([FromBody]string username, [FromBody]string password)
+        public string Login([FromBody]LoginPair login)
         {
-            User user = database.GetUser(username);
+            if (login.Username == null || login.Password == null)
+            {
+
+                return "";
+            }
+            User user = database.GetUser(login.Username);
             if (user == null)
             {
                 // Don't return a token if they use an invalid login and handle
                 // issue on the client side.
                 return "";
             }
-            if (DataHandler.IsCorrectPassword(password, user))
+            if (DataHandler.IsCorrectPassword(login.Password, user))
             {
                 return logins.AddLogin(user);
             }
@@ -55,7 +60,7 @@ namespace ForumAPI.Controllers
         }
 
         [HttpDelete("{session}")]
-        public void Delete(string session)
+        public void Logout(string session)
         {
             string error = "";
             User user = logins.GetUser(session, out error);

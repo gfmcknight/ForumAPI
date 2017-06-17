@@ -35,7 +35,7 @@ namespace ForumAPI.Controllers
         }
 
         [HttpGet("{id}/threads")]
-        public IActionResult Get(int id)
+        public IActionResult GetThreads(int id)
         {
             Topic topic = database.GetTopic(id);
 
@@ -49,6 +49,8 @@ namespace ForumAPI.Controllers
                 return new ObjectResult(topic.Threads.OrderByDescending(
                            t => t.Posts.Count > 1 ? t.Posts.Last().Created : t.Created));
             }
+            // We need to return an empty list to the client to maintain consistency, if no
+            // threads are on the board.
             else return new ObjectResult(new LinkedList<Thread>());
         }
 

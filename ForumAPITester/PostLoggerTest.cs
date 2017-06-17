@@ -32,6 +32,7 @@ namespace ForumAPITester
         public void TestCreate()
         {
             controller.Create("session", ActionLoggerDummy.dummyThread);
+            controller.AddPost(1, "session", ActionLoggerDummy.dummyPost);
         }
     }
 }

@@ -5,12 +5,13 @@ using Xunit.Abstractions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using ForumAPI.Utilities;
 
 namespace ForumAPITester.Dummies
 {
     class ActionLoggerDummy : IForumContext, ILoginSessionService
     {
-        public static readonly User dummyUser = new User
+        public static User dummyUser = new User
         {
             ID = 1,
             Name = "Name",
@@ -22,7 +23,7 @@ namespace ForumAPITester.Dummies
             HasSignature = false
         };
 
-        public static readonly Topic dummyTopic = new Topic
+        public static Topic dummyTopic = new Topic
         {
             ID = 1,
             AllowsThreads = true,
@@ -30,7 +31,7 @@ namespace ForumAPITester.Dummies
             Description = "Desciption",
         };
 
-        public static readonly Thread dummyThread = new Thread
+        public static Thread dummyThread = new Thread
         {
             ID = 1,
             AuthorID = 1,
@@ -41,7 +42,7 @@ namespace ForumAPITester.Dummies
             Title = "Title"
         };
 
-        private static readonly Post dummyPost = new Post
+        public static Post dummyPost = new Post
         {
             ID = 1,
             OwnerID = 1,
@@ -145,7 +146,7 @@ namespace ForumAPITester.Dummies
 
         User IForumContext.GetUser(string username)
         {
-            output.WriteLine("IForumContext.GetPost(string) called.");
+            output.WriteLine("IForumContext.GetUser(string) called.");
             output.WriteLine(username);
             return dummyUser;
         }

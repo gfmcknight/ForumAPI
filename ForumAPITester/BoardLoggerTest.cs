@@ -27,9 +27,9 @@ namespace ForumAPITester
         [Fact]
         public void TestGet()
         {
-            controller.Get(1);
-            controller.Get(2);
-            controller.Get(3);
+            controller.GetThreads(1);
+            controller.GetThreads(2);
+            controller.GetThreads(3);
         }
 
         [Fact]

@@ -68,7 +68,7 @@ namespace ForumAPI.Utilities
             user.PasswordProtocolVersion = 1;
             user.Salt = GenerateSalt(8);
 
-            user.SHA256Password = getHash(user.Name + user.Salt, user.PasswordProtocolVersion);
+            user.SHA256Password = getHash(password + user.Salt, user.PasswordProtocolVersion);
         }
 
         public static bool IsCorrectPassword(string rawPassword, User user)
