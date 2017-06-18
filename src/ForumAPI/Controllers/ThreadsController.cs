@@ -54,7 +54,7 @@ namespace ForumAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody]string session, [FromBody]Thread thread)
+        public IActionResult Create([FromQuery]string session, [FromBody]Thread thread)
         {
             if (thread == null)
             {
@@ -84,7 +84,7 @@ namespace ForumAPI.Controllers
         }
 
         [HttpPost("{id}/posts")]
-        public IActionResult AddPost(int id, [FromBody]string session, [FromBody]Post post)
+        public IActionResult AddPost(int id, [FromQuery]string session, [FromBody]Post post)
         {
             if (post == null)
             {
@@ -122,7 +122,7 @@ namespace ForumAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id, [FromBody]string session)
+        public IActionResult Delete(int id, [FromQuery]string session)
         {
             Thread thread = database.GetThread(id);
             if (thread == null)

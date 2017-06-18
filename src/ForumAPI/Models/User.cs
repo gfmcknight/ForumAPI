@@ -37,8 +37,8 @@ namespace ForumAPI.Models
         public UserStatus Status { get; set; }
         
         // Passwords must be encrypted for the purpose of security, even if
-        // this will not see commercial use.
-        [JsonIgnore]
+        // this will not see commercial use. This must be erased when returning a
+        // user.
         public string SHA256Password { get; set; }
         
         // A random string attached to the password before encryption.

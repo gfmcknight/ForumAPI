@@ -46,7 +46,7 @@ namespace ForumAPI.Controllers
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody]User user, [FromBody]string password)
+        public IActionResult NewUser([FromBody]UserSubmission user)
         {
             if (user == null)
             {
@@ -60,32 +60,35 @@ namespace ForumAPI.Controllers
 
             foreach (User other in database.GetAllUsers())
             {
-                if (user.Name == other.Name || user.Email == other.Email)
+                if (user.Username == other.Name || user.Email == other.Email)
                 {
                     return BadRequest(Errors.AlreadyExists);
                 }
             }
 
-            if (!DataHandler.VerifyPassword(password))
+            if (!DataHandler.VerifyPassword(user.Password))
             {
                 return BadRequest(Errors.WeakPassword);
             }
 
-            database.AddUser(user, password);
+            database.AddUser(user);
             database.SaveChanges();
+            user.Password = "";
             return new ObjectResult(user);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Put([FromBody]User user, [FromBody]string password, [FromBody]string session)
+        public IActionResult Modify([FromBody]UserSubmission user, [FromBody]string session)
         {
             if (user == null)
             {
                 return BadRequest(Errors.MissingFields);
             }
 
-            if (database.GetUser(user.ID) == null)
+            User userInDatabase = database.GetUser(user.Username);
+
+            if (userInDatabase == null)
             {
                 return NotFound(Errors.NoSuchElement);
             }
@@ -106,18 +109,20 @@ namespace ForumAPI.Controllers
             {
                 // If the user is requesting a password change, they must be user they
                 // want to apply it to.
-                if (user.ID != requester.ID && (password != null && password != ""))
+                if (userInDatabase.ID != requester.ID && 
+                    user.Password != null && user.Password != "")
                 {
                     return new ForbidResult(Errors.PermissionDenied);
                 }
                 else
                 {
                     // A user can only make a change to themselves or if they are a moderator
-                    if (requester.ID == user.ID || requester.Status >= UserStatus.Moderator)
+                    if (requester.ID == userInDatabase.ID || 
+                        requester.Status >= UserStatus.Moderator)
                     {
-                        database.UpdateUser(user, password, requester.Status);
+                        database.UpdateUser(userInDatabase.ID, user, requester.Status);
                         database.SaveChanges();
-                        return new ObjectResult(database.GetUser(user.ID));
+                        return new ObjectResult(database.GetUser(userInDatabase.ID));
                     }
                     else
                     {
@@ -128,9 +133,8 @@ namespace ForumAPI.Controllers
 
         }
 
-        // DELETE api/values/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id, [FromBody]string session)
+        public IActionResult Delete(int id, [FromQuery]string session)
         {
             User user = database.GetUser(id);
             if (user == null)

@@ -24,12 +24,14 @@ namespace ForumAPI.Data
                 Description = "This is the root board"
             };
 
-            var master = new User { Name = "Graham", Email = "graham.mcknight2@gmail.com",
-                                    HasSignature = false};
+            var master = new UserSubmission { Username = "Graham",
+                                    Email = "graham.mcknight2@gmail.com",
+                                    HasSignature = false,
+                                    Password = "DefaultPassword123" };
 
             context.AddTopic(mainBoard);
             // This password only exists momentarily when the system is being created.
-            context.AddUser(master, "DefaultPassword123");
+            context.AddUser(master);
             master.Status = UserStatus.Administrator;
 
             context.SaveChanges();

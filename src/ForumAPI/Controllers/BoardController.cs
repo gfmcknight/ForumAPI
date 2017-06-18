@@ -34,6 +34,24 @@ namespace ForumAPI.Controllers
             return new ObjectResult(database.GetTopic(1));
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetSubtopics(int id)
+        {
+            Topic topic = database.GetTopic(id);
+            if (topic == null)
+            {
+                return NotFound(Errors.NoSuchElement);
+            }
+
+            if (topic.SubTopics != null)
+            {
+                return new ObjectResult(topic.SubTopics.Select(t => t.Child));
+            }
+            // Return an empty list to the client in the case that there are no
+            // subtopics.
+            else return new ObjectResult(new LinkedList<Thread>());
+        }
+
         [HttpGet("{id}/threads")]
         public IActionResult GetThreads(int id)
         {
@@ -55,7 +73,7 @@ namespace ForumAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]string session, [FromBody]Topic topic)
+        public IActionResult NewTopic([FromQuery]string session, [FromBody]Topic topic)
         {
             if (topic == null)
             {
@@ -87,7 +105,7 @@ namespace ForumAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id, [FromBody]string session)
+        public IActionResult Delete(int id, [FromQuery]string session)
         {
             Topic topic = database.GetTopic(id);
 

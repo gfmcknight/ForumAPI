@@ -30,13 +30,13 @@ namespace ForumAPITester
         [Fact]
         public void TestPost()
         {
-            controller.Post(ActionLoggerDummy.dummyUser, ActionLoggerDummy.dummyUser.SHA256Password);
-            controller.Post(new User
+            controller.NewUser(ActionLoggerDummy.dummyUser, ActionLoggerDummy.dummyUser.SHA256Password);
+            controller.NewUser(new User
                 {
                     Email = "my.email@gmail.com",
                     Name = "bigUserName",
                 }, "Hello!");
-            controller.Post(new User
+            controller.NewUser(new User
             {
                 Email = "my.email@gmail.com",
                 Name = "bigUserName",
@@ -46,9 +46,9 @@ namespace ForumAPITester
         [Fact]
         public void TestPut()
         {
-            controller.Put(ActionLoggerDummy.dummyUser, "", "token");
+            controller.Modify(ActionLoggerDummy.dummyUser, "", "token");
 
-            controller.Put(new User
+            controller.Modify(new User
             {
                 ID = 1,
                 Name = "new name",
@@ -56,7 +56,7 @@ namespace ForumAPITester
                 HasSignature = true,
             }, "", "session");
 
-            controller.Put(ActionLoggerDummy.dummyUser, "hello", "mysession");
+            controller.Modify(ActionLoggerDummy.dummyUser, "hello", "mysession");
         }
     }
 }

@@ -35,7 +35,7 @@ namespace ForumAPITester
         [Fact]
         public void TestPost()
         {
-            controller.Post("Hello", ActionLoggerDummy.dummyTopic);
+            controller.NewTopic("Hello", ActionLoggerDummy.dummyTopic);
         }
 
         [Fact]

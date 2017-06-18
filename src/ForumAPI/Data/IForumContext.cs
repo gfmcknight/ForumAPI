@@ -8,12 +8,12 @@ namespace ForumAPI.Data
 {
     public interface IForumContext
     {
-        bool AddUser(User user, string password);
+        bool AddUser(UserSubmission user);
         User GetUser(int id);
         User GetUser(string username);
         IEnumerable<User> GetAllUsers();
         User RemoveUser(User user);
-        bool UpdateUser(User user, string password, UserStatus requestPermission);
+        bool UpdateUser(int id, UserSubmission user, UserStatus requestPermission);
         bool AddPost(Post post);
         Post GetPost(int id);
         Post RemovePost(Post post);

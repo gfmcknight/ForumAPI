@@ -42,14 +42,22 @@ namespace ForumAPI.Data
         public DbSet<Topic> Topics { get; set; }
         public DbSet<TopicRelation> TopicRelations { get; set; }
 
-        public bool AddUser(User user, string password)
+        public bool AddUser(UserSubmission user)
         {
-            user.Created = new DateTime(DateTime.Now.Ticks);
-            DataHandler.PopulatePasswordData(user, password);
+            User profile = new User
+            {
+                Name = user.Username,
+                Email = user.Email,
+                Status = user.Status,
+                HasSignature = user.HasSignature,
+                Signature = user.Signature,
+                Created = new DateTime(DateTime.Now.Ticks)
+            };
+            DataHandler.PopulatePasswordData(profile, user.Password);
 
             user.Status = UserStatus.Active;
 
-            Users.Add(user);
+            Users.Add(profile);
 
             return true;
         }
@@ -77,20 +85,20 @@ namespace ForumAPI.Data
             return user;
         }
 
-        public bool UpdateUser(User user, string password, UserStatus requestPermission)
+        public bool UpdateUser(int id, UserSubmission user, UserStatus requestPermission)
         {
-            User profile = GetUser(user.ID);
+            User profile = GetUser(id);
             if (profile == null)
             {
                 return false;
             }
 
-            if (password != "")
+            if (user.Password != null && user.Password != "")
             {
-                DataHandler.PopulatePasswordData(profile, password);
+                DataHandler.PopulatePasswordData(profile, user.Password);
             }
 
-            profile.Name = user.Name;
+            profile.Name = user.Username;
             profile.Email = user.Email;
             profile.HasSignature = user.HasSignature;
             profile.Signature = user.Signature;
