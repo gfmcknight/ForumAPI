@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using ForumAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using ForumAPI.Services;
+using System.Text;
+using ForumAPI.Utilities;
 
 namespace ForumAPI
 {
@@ -47,13 +49,13 @@ namespace ForumAPI
             // http://www.jerriepelser.com/blog/resolve-dbcontext-as-interface-in-aspnet5-ioc-container/
             services.AddScoped<IForumContext>(provider => provider.GetService<ForumContext>());
 
-            services.AddSingleton<ILoginSessionService, LoginSessionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
             ForumContext context)
         {
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 

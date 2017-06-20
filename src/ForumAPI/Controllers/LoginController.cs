@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using ForumAPI.Services;
 using ForumAPI.Data;
@@ -19,12 +20,10 @@ namespace ForumAPI.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        ILoginSessionService logins;
         IForumContext database;
 
-        public LoginController(ILoginSessionService logins, IForumContext database)
+        public LoginController(IForumContext database)
         {
-            this.logins = logins;
             this.database = database;
         }
 
@@ -51,22 +50,11 @@ namespace ForumAPI.Controllers
             }
             if (DataHandler.IsCorrectPassword(login.Password, user))
             {
-                return logins.AddLogin(user);
+                return DataHandler.EncodeJWT(user.ID, user.Status);
             }
             else
             {
                 return "";
-            }
-        }
-
-        [HttpDelete("{session}")]
-        public void Logout(string session)
-        {
-            string error = "";
-            User user = logins.GetUser(session, out error);
-            if (user != null)
-            {
-                logins.Logout(session);
             }
         }
     }

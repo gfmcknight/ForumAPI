@@ -18,12 +18,15 @@ namespace ForumAPI.Data
         Post GetPost(int id);
         Post RemovePost(Post post);
         bool UpdatePost(Post post);
+        ICollection<Post> GetPosts(Thread thread);
         bool AddThread(Thread thread);
         Thread GetThread(int id);
+        ICollection<Thread> GetThreads(Topic topic);
         Thread RemoveThread(Thread thread);
         bool AddTopic(Topic topic);
         Topic GetTopic(int id);
         Topic RemoveTopic(Topic topic);
+        ICollection<TopicRelation> GetSubtopics(Topic topic);
         bool AddTopicRelation(TopicRelation relation);
         int SaveChanges();
     }

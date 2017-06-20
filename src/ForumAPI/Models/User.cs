@@ -39,6 +39,7 @@ namespace ForumAPI.Models
         // Passwords must be encrypted for the purpose of security, even if
         // this will not see commercial use. This must be erased when returning a
         // user.
+        [JsonIgnore]
         public string SHA256Password { get; set; }
         
         // A random string attached to the password before encryption.
@@ -53,8 +54,8 @@ namespace ForumAPI.Models
         public string Signature { get; set; }
 
         [InverseProperty("Author")] [JsonIgnore]
-        public ICollection<Thread> Threads { get; set; }
+        public virtual ICollection<Thread> Threads { get; set; }
         [InverseProperty("Author")] [JsonIgnore]
-        public ICollection<Post> Posts { get; set; }
+        public virtual ICollection<Post> Posts { get; set; }
     }
 }

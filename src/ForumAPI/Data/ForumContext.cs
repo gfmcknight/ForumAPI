@@ -108,8 +108,8 @@ namespace ForumAPI.Data
 
         public bool AddPost(Post post)
         {
-            post.HasSignature = post.Author.HasSignature;
-            post.Signature = post.Author.Signature;
+            post.HasSignature = GetUser(post.AuthorID).HasSignature;
+            post.Signature = GetUser(post.AuthorID).Signature;
 
             post.Created = new DateTime(DateTime.Now.Ticks);
 
@@ -121,6 +121,11 @@ namespace ForumAPI.Data
         public Post GetPost(int id)
         {
             return Posts.Find(id);
+        }
+
+        public ICollection<Post> GetPosts(Thread thread)
+        {
+            return Posts.Where(p => p.Owner == thread).ToList();
         }
 
         public Post RemovePost(Post post)
@@ -144,7 +149,7 @@ namespace ForumAPI.Data
 
         public bool AddThread(Thread thread)
         {
-            thread.Created = new DateTime();
+            thread.Created = new DateTime(DateTime.Now.Ticks);
             thread.Locked = false;
 
             Threads.Add(thread);
@@ -155,6 +160,11 @@ namespace ForumAPI.Data
         public Thread GetThread(int id)
         {
             return Threads.Find(id);
+        }
+        
+        public ICollection<Thread> GetThreads(Topic topic)
+        {
+            return Threads.Where(t => t.Owner == topic).ToList();
         }
 
         // Note: deletes all posts in thread
@@ -182,10 +192,20 @@ namespace ForumAPI.Data
             return topic;
         }
 
+        public ICollection<TopicRelation> GetSubtopics(Topic topic)
+        {
+            ICollection<TopicRelation> subTopics =
+                TopicRelations.Include(t => t.Child)
+                              .Where(t => t.Parent.ID == topic.ID).ToList();
+            return subTopics;
+        }
+
         public bool AddTopicRelation(TopicRelation relation)
         {
             TopicRelations.Add(relation);
             return true;
         }
+
+
     }
 }

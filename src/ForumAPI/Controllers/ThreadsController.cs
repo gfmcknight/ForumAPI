@@ -21,11 +21,9 @@ namespace ForumAPI.Controllers
     public class ThreadsController : Controller
     {
         private IForumContext database;
-        private ILoginSessionService logins;
 
-        public ThreadsController(ILoginSessionService logins, IForumContext database)
+        public ThreadsController(IForumContext database)
         {
-            this.logins = logins;
             this.database = database;
         }
 
@@ -50,30 +48,30 @@ namespace ForumAPI.Controllers
                 return NotFound(Errors.NoSuchElement);
             }
 
-            return new ObjectResult(thread.Posts);
+            return new ObjectResult(database.GetPosts(thread));
         }
 
         [HttpPost]
-        public IActionResult Create([FromQuery]string session, [FromBody]Thread thread)
+        public IActionResult Create([FromHeader]string session, [FromBody]Thread thread)
         {
             if (thread == null)
             {
                 return BadRequest(Errors.MissingFields);
             }
-            string error = "";
-            User user = logins.GetUser(session, out error);
-            if (user == null)
+
+            int userID;
+            UserStatus status;
+            if (!DataHandler.DecodeJWT(session, out userID, out status))
             {
-                return BadRequest(error);
+                return Unauthorized();
             }
             else
             {
-                if (user.Status >= UserStatus.Active)
+                if (status >= UserStatus.Active)
                 {
-                    thread.AuthorID = user.ID;
+                    thread.AuthorID = userID;
                     database.AddThread(thread);
                     database.SaveChanges();
-                    logins.UpdateLoginAction(session);
                     return new ObjectResult(thread);
                 }
                 else
@@ -84,7 +82,7 @@ namespace ForumAPI.Controllers
         }
 
         [HttpPost("{id}/posts")]
-        public IActionResult AddPost(int id, [FromQuery]string session, [FromBody]Post post)
+        public IActionResult AddPost(int id, [FromHeader]string session, [FromBody]Post post)
         {
             if (post == null)
             {
@@ -98,20 +96,19 @@ namespace ForumAPI.Controllers
 
             post.OwnerID = id;
 
-            string error = "";
-            User user = logins.GetUser(session, out error);
-            if (user == null)
+            int userID;
+            UserStatus status;
+            if (!DataHandler.DecodeJWT(session, out userID, out status))
             {
-                return BadRequest(error);
+                return Unauthorized();
             }
             else
             {
-                if (user.Status >= UserStatus.Active)
+                if (status >= UserStatus.Active)
                 {
-                    post.AuthorID = user.ID;
+                    post.AuthorID = userID;
                     database.AddPost(post);
                     database.SaveChanges();
-                    logins.UpdateLoginAction(session);
                     return new ObjectResult(post);
                 }
                 else
@@ -122,26 +119,27 @@ namespace ForumAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id, [FromQuery]string session)
+        public IActionResult Delete(int id, [FromHeader]string session)
         {
             Thread thread = database.GetThread(id);
             if (thread == null)
             {
                 return NotFound(Errors.NoSuchElement);
             }
-            string error = "";
-            User user = logins.GetUser(session, out error);
-            if (user == null)
+
+            int userID;
+            UserStatus status;
+            if (!DataHandler.DecodeJWT(session, out userID, out status))
             {
-                return BadRequest(error);
+                return Unauthorized();
             }
             else
             {
-                if (thread.Author == user || user.Status >= UserStatus.Moderator)
+                if (thread.AuthorID == userID || 
+                    status >= UserStatus.Moderator)
                 {
                     database.RemoveThread(thread);
                     database.SaveChanges();
-                    logins.UpdateLoginAction(session);
                     return new ObjectResult(thread);
                 }
                 else

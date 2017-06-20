@@ -19,12 +19,10 @@ namespace ForumAPI.Controllers
     public class UsersController : Controller
     {
 
-        ILoginSessionService logins;
         IForumContext database;
 
-        public UsersController(ILoginSessionService logins, IForumContext database)
+        public UsersController(IForumContext database)
         {
-            this.logins = logins;
             this.database = database;
         }
 
@@ -58,12 +56,10 @@ namespace ForumAPI.Controllers
                 return BadRequest(Errors.InvalidEmail);
             }
 
-            foreach (User other in database.GetAllUsers())
+            if (database.GetAllUsers().FirstOrDefault(u => u.Name == user.Username ||
+                                                      u.Email == user.Email) != null)
             {
-                if (user.Username == other.Name || user.Email == other.Email)
-                {
-                    return BadRequest(Errors.AlreadyExists);
-                }
+                return BadRequest(Errors.AlreadyExists);
             }
 
             if (!DataHandler.VerifyPassword(user.Password))
@@ -79,7 +75,7 @@ namespace ForumAPI.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Modify([FromBody]UserSubmission user, [FromBody]string session)
+        public IActionResult Modify([FromBody]UserSubmission user, [FromHeader]string session)
         {
             if (user == null)
             {
@@ -93,48 +89,43 @@ namespace ForumAPI.Controllers
                 return NotFound(Errors.NoSuchElement);
             }
 
-            string error = "";
-            User requester = logins.GetUser(session, out error);
+            int requesterID;
+            UserStatus requesterStatus;
+            if (!DataHandler.DecodeJWT(session, out requesterID, out requesterStatus))
+            {
+                return Unauthorized();
+            }
 
-            if (requester.Status < UserStatus.Active)
+            if (requesterStatus < UserStatus.Active)
             {
                 return new ForbidResult(Errors.PermissionDenied);
             }
 
-            if (session == null)
+            if (userInDatabase.ID != requesterID &&
+                user.Password != null && user.Password != "")
             {
-                return BadRequest(error);
+                return new ForbidResult(Errors.PermissionDenied);
             }
             else
             {
-                // If the user is requesting a password change, they must be user they
-                // want to apply it to.
-                if (userInDatabase.ID != requester.ID && 
-                    user.Password != null && user.Password != "")
+                // A user can only make a change to themselves or if they are a moderator
+                if (requesterID == userInDatabase.ID ||
+                    requesterStatus >= UserStatus.Moderator)
                 {
-                    return new ForbidResult(Errors.PermissionDenied);
+                    database.UpdateUser(userInDatabase.ID, user, requesterStatus);
+                    database.SaveChanges();
+                    return new ObjectResult(database.GetUser(userInDatabase.ID));
                 }
                 else
                 {
-                    // A user can only make a change to themselves or if they are a moderator
-                    if (requester.ID == userInDatabase.ID || 
-                        requester.Status >= UserStatus.Moderator)
-                    {
-                        database.UpdateUser(userInDatabase.ID, user, requester.Status);
-                        database.SaveChanges();
-                        return new ObjectResult(database.GetUser(userInDatabase.ID));
-                    }
-                    else
-                    {
-                        return new ForbidResult(Errors.PermissionDenied);
-                    }
+                    return new ForbidResult(Errors.PermissionDenied);
                 }
             }
-
         }
 
+
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id, [FromQuery]string session)
+        public IActionResult Delete(int id, [FromHeader]string session)
         {
             User user = database.GetUser(id);
             if (user == null)
@@ -142,15 +133,16 @@ namespace ForumAPI.Controllers
                 return NotFound(Errors.NoSuchElement);
             }
 
-            string error = "";
-            User requester = logins.GetUser(session, out error);
-            if (requester == null)
+            int requesterID;
+            UserStatus requesterStatus;
+
+            if (!DataHandler.DecodeJWT(session, out requesterID, out requesterStatus))
             {
-                return BadRequest(error);
+                return Unauthorized();
             }
             else
             {
-                if (requester.Status == UserStatus.Administrator)
+                if (requesterStatus == UserStatus.Administrator)
                 {
                     database.RemoveUser(user);
                     database.SaveChanges();

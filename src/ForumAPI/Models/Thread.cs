@@ -30,6 +30,6 @@ namespace ForumAPI.Models
         public User Author { get; set; }
         
         [JsonIgnore]
-        public ICollection<Post> Posts { get; set; }
+        public virtual ICollection<Post> Posts { get; set; }
     }
 }

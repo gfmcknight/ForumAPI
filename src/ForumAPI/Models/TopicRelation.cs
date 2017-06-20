@@ -14,10 +14,10 @@ namespace ForumAPI.Models
         [Key]
         public int ID { get; set; }
 
-        [JsonRequired]
+        [Required]
         public Topic Parent { get; set; }
 
-        [JsonRequired]
+        [Required]
         public Topic Child { get; set; }
     }
 }

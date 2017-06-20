@@ -20,11 +20,9 @@ namespace ForumAPI.Controllers
     public class BoardController : Controller
     {
         IForumContext database;
-        ILoginSessionService logins;
 
-        public BoardController(ILoginSessionService logins, IForumContext database)
+        public BoardController(IForumContext database)
         {
-            this.logins = logins;
             this.database = database;
         }
 
@@ -43,9 +41,12 @@ namespace ForumAPI.Controllers
                 return NotFound(Errors.NoSuchElement);
             }
 
-            if (topic.SubTopics != null)
+            ICollection<Topic> subTopics = database.GetSubtopics(topic)
+                                                   .Select(t => t.Child).ToList();
+
+            if (subTopics != null)
             {
-                return new ObjectResult(topic.SubTopics.Select(t => t.Child));
+                return new ObjectResult(subTopics);
             }
             // Return an empty list to the client in the case that there are no
             // subtopics.
@@ -61,39 +62,54 @@ namespace ForumAPI.Controllers
             {
                 return NotFound(Errors.NoSuchElement);
             }
+
+            ICollection<Thread> threads = database.GetThreads(topic);
+
             // Return all threads by which has the most recent (latest) post
-            if (topic.Threads != null)
+            if (threads != null)
             {
-                return new ObjectResult(topic.Threads.OrderByDescending(
-                           t => t.Posts.Count > 1 ? t.Posts.Last().Created : t.Created));
+                return new ObjectResult(threads.OrderByDescending(
+                           t => t.Posts != null && t.Posts.Count > 1 ? 
+                           t.Posts.Last().Created : t.Created));
             }
             // We need to return an empty list to the client to maintain consistency, if no
             // threads are on the board.
             else return new ObjectResult(new LinkedList<Thread>());
         }
 
-        [HttpPost]
-        public IActionResult NewTopic([FromQuery]string session, [FromBody]Topic topic)
+        [HttpPost("{id}")]
+        public IActionResult NewTopic(int id, [FromHeader]string session, [FromBody]Topic topic)
         {
             if (topic == null)
             {
                 return BadRequest(Errors.MissingFields);
             }
 
-            string error = "";
-            User user = logins.GetUser(session, out error);
-            
-            if (user == null)
+            Topic parent = database.GetTopic(id);
+            if (parent == null)
             {
-                return BadRequest(error);
+                return NotFound(Errors.NoSuchElement);
+            }
+
+            int userID;
+            UserStatus status;
+
+            if (!DataHandler.DecodeJWT(session, out userID, out status))
+            {
+                return Unauthorized();
             }
             else
             {
-                if (user.Status == UserStatus.Administrator)
+                if (status == UserStatus.Administrator)
                 {
                     database.AddTopic(topic);
+                    database.AddTopicRelation(new TopicRelation
+                        {
+                            Parent = parent,
+                            Child = topic
+                        });
+
                     database.SaveChanges();
-                    logins.UpdateLoginAction(session);
                     return new ObjectResult(topic);
                 }
                 else
@@ -105,24 +121,23 @@ namespace ForumAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id, [FromQuery]string session)
+        public IActionResult Delete(int id, [FromHeader]string session)
         {
             Topic topic = database.GetTopic(id);
 
-            string error = "";
-            User user = logins.GetUser(session, out error);
+            int userID;
+            UserStatus status;
 
-            if (user == null)
+            if (!DataHandler.DecodeJWT(session, out userID, out status))
             {
-                return BadRequest(error);
+                return Unauthorized();
             }
             else
             {
-                if (user.Status == UserStatus.Administrator)
+                if (status == UserStatus.Administrator)
                 {
                     database.RemoveTopic(topic);
                     database.SaveChanges();
-                    logins.UpdateLoginAction(session);
                     return new ObjectResult(topic);
                 }
                 else

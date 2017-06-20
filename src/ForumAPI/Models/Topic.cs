@@ -31,9 +31,9 @@ namespace ForumAPI.Models
 
         [InverseProperty("Parent")]
         [JsonIgnore]
-        public ICollection<TopicRelation> SubTopics { get; set; }
+        public virtual ICollection<TopicRelation> SubTopics { get; set; }
 
         [InverseProperty("Owner")] [JsonIgnore]
-        public ICollection<Thread> Threads { get; set; }
+        public virtual ICollection<Thread> Threads { get; set; }
     }
 }
