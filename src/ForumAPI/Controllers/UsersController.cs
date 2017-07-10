@@ -42,6 +42,29 @@ namespace ForumAPI.Controllers
             return new ObjectResult(user);
         }
 
+        [HttpGet("self")]
+        public IActionResult GetSelf([FromHeader]string session)
+        {
+            int userID;
+            UserStatus status;
+
+            if (!DataHandler.DecodeJWT(session, out userID, out status))
+            {
+                return NotFound(Errors.SessionNotFound);
+            }
+
+            User user = database.GetUser(userID);
+
+            if (user == null)
+            {
+                return NotFound(Errors.NoSuchElement);
+            }
+
+            user.Email = null;
+
+            return new ObjectResult(user);
+        }
+
         // POST api/values
         [HttpPost]
         public IActionResult NewUser([FromBody]UserSubmission user)
@@ -67,22 +90,22 @@ namespace ForumAPI.Controllers
                 return BadRequest(Errors.WeakPassword);
             }
 
-            database.AddUser(user);
+            User newProfile = database.AddUser(user);
             database.SaveChanges();
             user.Password = "";
-            return new ObjectResult(user);
+            return new CreatedResult("users/" + newProfile.ID, user);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Modify([FromBody]UserSubmission user, [FromHeader]string session)
+        public IActionResult Modify(int id, [FromBody]UserSubmission user, [FromHeader]string session)
         {
             if (user == null)
             {
                 return BadRequest(Errors.MissingFields);
             }
 
-            User userInDatabase = database.GetUser(user.Username);
+            User userInDatabase = database.GetUser(id);
 
             if (userInDatabase == null)
             {

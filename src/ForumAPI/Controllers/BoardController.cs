@@ -110,7 +110,7 @@ namespace ForumAPI.Controllers
                         });
 
                     database.SaveChanges();
-                    return new ObjectResult(topic);
+                    return new CreatedResult("board/" + topic.ID, topic);
                 }
                 else
                 {

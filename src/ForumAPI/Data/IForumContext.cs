@@ -8,7 +8,7 @@ namespace ForumAPI.Data
 {
     public interface IForumContext
     {
-        bool AddUser(UserSubmission user);
+        User AddUser(UserSubmission user);
         User GetUser(int id);
         User GetUser(string username);
         IEnumerable<User> GetAllUsers();

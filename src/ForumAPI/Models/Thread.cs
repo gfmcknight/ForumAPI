@@ -24,7 +24,6 @@ namespace ForumAPI.Models
         [JsonIgnore]
         public Topic Owner { get; set; }
 
-        [JsonRequired]
         public int AuthorID { get; set; }
         [JsonIgnore]
         public User Author { get; set; }

@@ -34,6 +34,16 @@ namespace ForumAPI.Data
                 .HasOne(p => p.Author)
                 .WithMany(p => p.Posts)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TopicRelation>()
+                .HasOne(p => p.Parent)
+                .WithMany(p => p.SubTopics)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TopicRelation>()
+                .HasOne(p => p.Child)
+                .WithMany(p => p.Parents)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<User> Users { get; set; }
@@ -42,7 +52,7 @@ namespace ForumAPI.Data
         public DbSet<Topic> Topics { get; set; }
         public DbSet<TopicRelation> TopicRelations { get; set; }
 
-        public bool AddUser(UserSubmission user)
+        public User AddUser(UserSubmission user)
         {
             User profile = new User
             {
@@ -59,7 +69,7 @@ namespace ForumAPI.Data
 
             Users.Add(profile);
 
-            return true;
+            return profile;
         }
 
         public User GetUser(int id)

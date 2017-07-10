@@ -50,6 +50,11 @@ namespace ForumAPI.Controllers
             }
             if (DataHandler.IsCorrectPassword(login.Password, user))
             {
+                if (user.PasswordProtocolVersion < DataHandler.CurrentPasswordProtocolVersion)
+                {
+                    DataHandler.PopulatePasswordData(user, login.Password);
+                    database.SaveChanges();
+                }
                 return DataHandler.EncodeJWT(user.ID, user.Status);
             }
             else

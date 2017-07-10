@@ -72,7 +72,7 @@ namespace ForumAPI.Controllers
                     thread.AuthorID = userID;
                     database.AddThread(thread);
                     database.SaveChanges();
-                    return new ObjectResult(thread);
+                    return new CreatedResult("threads/" + thread.ID, thread);
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace ForumAPI.Controllers
                     post.AuthorID = userID;
                     database.AddPost(post);
                     database.SaveChanges();
-                    return new ObjectResult(post);
+                    return new CreatedResult("threads/" + id, post);
                 }
                 else
                 {

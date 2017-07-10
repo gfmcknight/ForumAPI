@@ -90,9 +90,12 @@ namespace ForumAPI.Utilities
         /// </summary>
         /// <param name="user">The user to populate with password info.</param>
         /// <param name="password">The user-entered password.</param>
+
+        public static readonly int CurrentPasswordProtocolVersion = 2;
+
         public static void PopulatePasswordData(User user, string password)
         {
-            user.PasswordProtocolVersion = 1;
+            user.PasswordProtocolVersion = CurrentPasswordProtocolVersion;
             user.Salt = GenerateSalt(8);
 
             user.SHA256Password = getHash(password + user.Salt, user.PasswordProtocolVersion);
@@ -121,10 +124,13 @@ namespace ForumAPI.Utilities
         /// <returns>The SHA-256 hash of the password.</returns>
         private static string getHash(string input, int protocol)
         {
+            SHA256 sha = SHA256.Create();
             switch (protocol) {
+
                 case 1:
-                    SHA256 sha = SHA256.Create();
                     return CreateString(sha.ComputeHash(CreateByteArray(input)));
+                case 2:
+                    return Convert.ToBase64String(sha.ComputeHash(CreateByteArray(input)));
                 default:
                     return "";
             }
@@ -144,7 +150,7 @@ namespace ForumAPI.Utilities
         private static readonly JWTHeader header = new JWTHeader
         {
             Type = "jwt",
-            Algorithm = "RSA"
+            Algorithm = "HMAC"
         };
 
         /// <summary>

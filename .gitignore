@@ -3,6 +3,7 @@
 
 # Protect the secret for JWT token authorization
 src/ForumAPI/Utilities/AuthorizationInfo.cs
+src/ForumAPI/appsettings.json
 
 # User-specific files
 *.suo

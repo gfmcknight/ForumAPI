@@ -42,6 +42,15 @@ namespace ForumAPI
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
+
             services.AddMvc();
 
             services.AddDbContext<ForumContext>(options =>
@@ -60,6 +69,8 @@ namespace ForumAPI
             loggerFactory.AddDebug();
 
             DbInitializer.Initialize(context);
+
+            app.UseCors("CorsPolicy");
 
             app.UseMvc();
         }
