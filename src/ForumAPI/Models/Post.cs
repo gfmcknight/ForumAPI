@@ -27,7 +27,7 @@ namespace ForumAPI.Models
         public Thread Owner { get; set; }
 
         public int AuthorID { get; set; }
-        [ForeignKey("AuthorID")] [JsonIgnore]
+        [ForeignKey("AuthorID")]
         public User Author { get; set; }
         
     }

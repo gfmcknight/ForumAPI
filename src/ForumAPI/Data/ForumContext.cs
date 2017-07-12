@@ -65,7 +65,7 @@ namespace ForumAPI.Data
             };
             DataHandler.PopulatePasswordData(profile, user.Password);
 
-            user.Status = UserStatus.Active;
+            profile.Status = UserStatus.Active;
 
             Users.Add(profile);
 
@@ -113,6 +113,11 @@ namespace ForumAPI.Data
             profile.HasSignature = user.HasSignature;
             profile.Signature = user.Signature;
 
+            if (requestPermission >= user.Status)
+            {
+                profile.Status = user.Status;
+            }
+
             return true;
         }
 
@@ -135,7 +140,8 @@ namespace ForumAPI.Data
 
         public ICollection<Post> GetPosts(Thread thread)
         {
-            return Posts.Where(p => p.Owner == thread).ToList();
+            return Posts.Where(p => p.Owner == thread)
+                .Include(p => p.Author).ToList();
         }
 
         public Post RemovePost(Post post)
@@ -169,12 +175,14 @@ namespace ForumAPI.Data
 
         public Thread GetThread(int id)
         {
-            return Threads.Find(id);
+            return Threads.Include(t => t.Author)
+                .FirstOrDefault(t => t.ID == id);
         }
         
         public ICollection<Thread> GetThreads(Topic topic)
         {
-            return Threads.Where(t => t.Owner == topic).ToList();
+            return Threads.Where(t => t.Owner == topic)
+                .Include(p => p.Author).ToList();
         }
 
         // Note: deletes all posts in thread

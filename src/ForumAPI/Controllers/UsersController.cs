@@ -121,13 +121,13 @@ namespace ForumAPI.Controllers
 
             if (requesterStatus < UserStatus.Active)
             {
-                return new ForbidResult(Errors.PermissionDenied);
+                return new ForbidResult();
             }
 
             if (userInDatabase.ID != requesterID &&
                 user.Password != null && user.Password != "")
             {
-                return new ForbidResult(Errors.PermissionDenied);
+                return new ForbidResult();
             }
             else
             {
@@ -141,7 +141,7 @@ namespace ForumAPI.Controllers
                 }
                 else
                 {
-                    return new ForbidResult(Errors.PermissionDenied);
+                    return new ForbidResult();
                 }
             }
         }
@@ -173,7 +173,7 @@ namespace ForumAPI.Controllers
                 }
                 else
                 {
-                    return new ForbidResult(Errors.PermissionDenied);
+                    return new ForbidResult();
                 }
             }
         }

@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json.Converters;
+using System.Runtime.Serialization;
 
 namespace ForumAPI.Models
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum UserStatus
     {
         Administrator = 5,

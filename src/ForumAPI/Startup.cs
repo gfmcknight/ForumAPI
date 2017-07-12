@@ -64,13 +64,14 @@ namespace ForumAPI
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
             ForumContext context)
         {
-
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             DbInitializer.Initialize(context);
 
+            app.UseDeveloperExceptionPage();
             app.UseCors("CorsPolicy");
+
 
             app.UseMvc();
         }

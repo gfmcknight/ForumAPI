@@ -76,7 +76,7 @@ namespace ForumAPI.Controllers
                 }
                 else
                 {
-                    return new ForbidResult(Errors.PermissionDenied);
+                    return new ForbidResult();
                 }
             }
         }
@@ -113,7 +113,7 @@ namespace ForumAPI.Controllers
                 }
                 else
                 {
-                    return new ForbidResult(Errors.PermissionDenied);
+                    return new ForbidResult();
                 }
             }
         }
@@ -144,7 +144,7 @@ namespace ForumAPI.Controllers
                 }
                 else
                 {
-                    return new ForbidResult(Errors.PermissionDenied);
+                    return new ForbidResult();
                 }
             }
 

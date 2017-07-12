@@ -31,8 +31,9 @@ namespace ForumAPI.Data
 
             context.AddTopic(mainBoard);
             // This password only exists momentarily when the system is being created.
-            context.AddUser(master);
+            int id = context.AddUser(master).ID;
             master.Status = UserStatus.Administrator;
+            context.UpdateUser(id, master, UserStatus.Administrator);
 
             context.SaveChanges();
         }
