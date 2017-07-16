@@ -10,7 +10,6 @@ using ForumAPI.Services;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
-///
 namespace ForumAPI.Controllers
 {
     /// <summary>
@@ -25,14 +24,43 @@ namespace ForumAPI.Controllers
         {
             this.database = database;
         }
-
+        
+        /// <summary>
+        /// Returns the root topic of the board.
+        /// </summary>
+        /// <returns>The root topic of the board.</returns>
         [HttpGet]
         public IActionResult GetRoot()
         {
             return new ObjectResult(database.GetTopic(1));
         }
 
+        /// <summary>
+        /// Finds the topic with the given id.
+        /// </summary>
+        /// <param name="id">The id of the topic to find.</param>
+        /// <returns>The topic, if found, otherwise a response 404.</returns>
         [HttpGet("{id}")]
+        public IActionResult GetTopic(int id)
+        {
+            Topic topic = database.GetTopic(id);
+            if (topic == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return new ObjectResult(topic);
+            }
+        }
+
+        /// <summary>
+        /// Returns a list of all subtopics in a topic.
+        /// </summary>
+        /// <param name="id">The id of the topic to find.</param>
+        /// <returns>The list of all subtopics if the topic exists,
+        /// otherwise a response 404.</returns>
+        [HttpGet("{id}/topics")]
         public IActionResult GetSubtopics(int id)
         {
             Topic topic = database.GetTopic(id);
@@ -53,6 +81,12 @@ namespace ForumAPI.Controllers
             else return new ObjectResult(new LinkedList<Thread>());
         }
 
+        /// <summary>
+        /// Returns a list of all threads in a topic.
+        /// </summary>
+        /// <param name="id">The id of the topic to find.</param>
+        /// <returns>The list of all threads if the topic exists,
+        /// otherwise a response 404.</returns>
         [HttpGet("{id}/threads")]
         public IActionResult GetThreads(int id)
         {
@@ -77,6 +111,19 @@ namespace ForumAPI.Controllers
             else return new ObjectResult(new LinkedList<Thread>());
         }
 
+        /// <summary>
+        /// Posts a new topic.
+        /// </summary>
+        /// <param name="id">The topic of the parent topic to attach to.</param>
+        /// <param name="session">Authentication token from the login service.</param>
+        /// <param name="topic">The topic to post.</param>
+        /// <returns>
+        /// Response 201 if the board is correctly created.
+        /// Response 400 if the board object doesn't contain the necessary fields.
+        /// Response 401 if the session is empty, expired, or invalid.
+        /// Response 403 if the user is not an administrator.
+        /// Response 404 if the parent thread does not exist.
+        /// </returns>
         [HttpPost("{id}")]
         public IActionResult NewTopic(int id, [FromHeader]string session, [FromBody]Topic topic)
         {
@@ -120,10 +167,25 @@ namespace ForumAPI.Controllers
             
         }
 
+        /// <summary>
+        /// Deletes the given topic, and all threads and posts within.
+        /// </summary>
+        /// <param name="id">The id of the topic to delete.</param>
+        /// <param name="session">Authentication token from the login service.</param>
+        /// <returns>
+        /// Response 200 if the topic is correctly deleted.
+        /// Response 401 if the session is empty, expired, or invalid.
+        /// Response 403 if the user is not an administrator.
+        /// Response 404 if the thread cannot be found.
+        /// </returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(int id, [FromHeader]string session)
         {
             Topic topic = database.GetTopic(id);
+            if (topic == null)
+            {
+                return NotFound();
+            }
 
             int userID;
             UserStatus status;

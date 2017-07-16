@@ -157,8 +157,8 @@ namespace ForumAPI.Utilities
         /// Creates a JWT Token for the given user id using the JWTHeader and JWTBody
         /// classes.
         /// </summary>
-        /// <param name="id">The id of the user the </param>
-        /// <returns>The token </returns>
+        /// <param name="id">The id of the user the user to give the token</param>
+        /// <returns>The token in s JWT format.</returns>
         public static string EncodeJWT(int id, UserStatus status)
         {
             JWTBody body = new JWTBody
@@ -187,15 +187,20 @@ namespace ForumAPI.Utilities
         }
 
         /// <summary>
-        /// Validates a JDW Token, and determines the user
+        /// Decodes and validates a JWT token provided by the user.
         /// </summary>
-        /// <param name="token"></param>
-        /// <param name="id"></param>
-        /// <returns>False if token is invalid.</returns>
+        /// <param name="token">The token to decode.</param>
+        /// <param name="id">Set to the id of the user the token belongs to.</param>
+        /// <param name="status">Set to the access level of the user owning the token.</param>
+        /// <returns>True if the token decodes correctly.</returns>
         public static bool DecodeJWT(string token, out int id, out UserStatus status)
         {
             id = 0;
             status = UserStatus.Banned;
+            if (token == null)
+            {
+                return false;
+            }
             string[] parts = token.Split(".".ToArray());
 
             if (parts.Length != 3)

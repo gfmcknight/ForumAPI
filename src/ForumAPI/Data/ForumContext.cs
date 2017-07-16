@@ -86,11 +86,11 @@ namespace ForumAPI.Data
         {
             return Users;
         }
-
-        // A User's profile should never be removed, merely deactivated.
-        // Only used in order to update a user.
+        
         public User RemoveUser(User user)
         {
+            // A User's profile should never be removed, merely deactivated.
+            // Only used in order to update a user.
             Users.Remove(user);
             return user;
         }
@@ -185,9 +185,9 @@ namespace ForumAPI.Data
                 .Include(p => p.Author).ToList();
         }
 
-        // Note: deletes all posts in thread
         public Thread RemoveThread(Thread thread)
         {
+            // Note: deletes all posts in thread
             Threads.Remove(thread);
 
             return thread;
@@ -223,7 +223,5 @@ namespace ForumAPI.Data
             TopicRelations.Add(relation);
             return true;
         }
-
-
     }
 }

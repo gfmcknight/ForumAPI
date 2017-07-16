@@ -22,6 +22,11 @@ namespace ForumAPI.Utilities
             return base.GetHashCode();
         }
 
+        /// <summary>
+        /// Compares with a JWT Header to determine if they have the values.
+        /// </summary>
+        /// <param name="obj">The JWT header to compare to.</param>
+        /// <returns>True if the two JWT Headers are the same.</returns>
         public override bool Equals(object obj)
         {
             return obj is JWTHeader &&

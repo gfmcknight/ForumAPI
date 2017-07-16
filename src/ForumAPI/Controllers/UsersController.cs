@@ -26,7 +26,12 @@ namespace ForumAPI.Controllers
             this.database = database;
         }
 
-        // GET api/values/5
+        /// <summary>
+        /// Finds the user with the given id.
+        /// </summary>
+        /// <param name="id">The id of the user to find.</param>
+        /// <returns>The user with the given id, if found,
+        /// otherwise a response 404.</returns>
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -42,6 +47,12 @@ namespace ForumAPI.Controllers
             return new ObjectResult(user);
         }
 
+        /// <summary>
+        /// Returns the user given an authentication token.
+        /// </summary>
+        /// <param name="session">Authentication token from the login service.</param>
+        /// <returns>The user owning the token, if found,
+        /// otherwise a response 404.</returns>
         [HttpGet("self")]
         public IActionResult GetSelf([FromHeader]string session)
         {
@@ -65,7 +76,14 @@ namespace ForumAPI.Controllers
             return new ObjectResult(user);
         }
 
-        // POST api/values
+        /// <summary>
+        /// Posts a new user.
+        /// </summary>
+        /// <param name="user">The user to create.</param>
+        /// <returns>
+        /// Response 201 if the user is correctly created.
+        /// Response 400 if the user object doesn't contain the necessary fields.
+        /// </returns>
         [HttpPost]
         public IActionResult NewUser([FromBody]UserSubmission user)
         {
@@ -96,7 +114,20 @@ namespace ForumAPI.Controllers
             return new CreatedResult("users/" + newProfile.ID, user);
         }
 
-        // PUT api/values/5
+        /// <summary>
+        /// Modifies a user with the given fields.
+        /// </summary>
+        /// <param name="id">The id of the user to modify.</param>
+        /// <param name="user">The set of changes to make to the user.</param>
+        /// <param name="session">Authentication token from the login service.</param>
+        /// <returns>
+        /// Response 200 if sucessful in modifying user.
+        /// Response 400 if the user object doesn't contain the necessary fields.
+        /// Response 401 if the session is empty, expired, or invalid.
+        /// Response 403 if the user is banned or deactivated, or is attempting to
+        /// modify a user that is not themself, unless they are a moderator.
+        /// Response 404 if the user doesn't exist with the given id.
+        /// </returns>
         [HttpPut("{id}")]
         public IActionResult Modify(int id, [FromBody]UserSubmission user, [FromHeader]string session)
         {
@@ -146,7 +177,17 @@ namespace ForumAPI.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Deletes the given thread, and all posts within.
+        /// </summary>
+        /// <param name="id">The id of the user to delete.</param>
+        /// <param name="session">Authentication token from the login service.</param>
+        /// <returns>
+        /// Response 200 if the user is correctly deleted.
+        /// Response 401 if the session is empty, expired, or invalid.
+        /// Response 403 if the user is not an administrator.
+        /// Response 404 if the user cannot be found.
+        /// </returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(int id, [FromHeader]string session)
         {

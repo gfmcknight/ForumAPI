@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace ForumAPI.Utilities
 {
+    /// <summary>
+    /// Defines strings to return when specifying what went wrong to the user.
+    /// </summary>
     public static class Errors
     {
         public static readonly string NoSuchElement = "ItemNotFound";
