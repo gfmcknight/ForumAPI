@@ -9,9 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ForumAPI.Data;
 using Microsoft.EntityFrameworkCore;
-using ForumAPI.Services;
-using System.Text;
-using ForumAPI.Utilities;
+using Microsoft.Extensions.PlatformAbstractions;
+using System.IO;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace ForumAPI
 {
@@ -42,6 +43,11 @@ namespace ForumAPI
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute());
+            });
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -58,6 +64,19 @@ namespace ForumAPI
             // http://www.jerriepelser.com/blog/resolve-dbcontext-as-interface-in-aspnet5-ioc-container/
             services.AddScoped<IForumContext>(provider => provider.GetService<ForumContext>());
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
+                {
+                    Title = "forum-api",
+                    Version = "v1"
+                });
+                string basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                string pathToFile = Configuration["Swagger:FileName"];
+                string xmlPath = Path.Combine(basePath, pathToFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -67,11 +86,29 @@ namespace ForumAPI
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            var options = new RewriteOptions()
+                .AddRedirectToHttps();
+
+            app.UseRewriter(options);
+
             DbInitializer.Initialize(context);
+            
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseDeveloperExceptionPage();
             app.UseCors("CorsPolicy");
 
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "api/docs/{documentName}/swagger.json";
+            });
+
+            app.UseSwaggerUI(c =>
+            {
+                c.RoutePrefix = "api/docs";
+                c.SwaggerEndpoint("/api/docs/v1/swagger.json", "Forum API V1");
+            });
 
             app.UseMvc();
         }

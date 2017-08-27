@@ -109,7 +109,6 @@ namespace ForumAPI.Data
             }
 
             profile.Name = user.Username;
-            profile.Email = user.Email;
             profile.HasSignature = user.HasSignature;
             profile.Signature = user.Signature;
 

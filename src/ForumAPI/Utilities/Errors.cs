@@ -10,12 +10,12 @@ namespace ForumAPI.Utilities
     /// </summary>
     public static class Errors
     {
-        public static readonly string NoSuchElement = "ItemNotFound";
-        public static readonly string InvalidEmail = "InvalidEmail";
-        public static readonly string MissingFields = "ItemNotComplete";
-        public static readonly string SessionTimeout = "LoginTimeout";
-        public static readonly string SessionNotFound = "LoginTimeout";
-        public static readonly string AlreadyExists = "UserAlreadyExists";
-        public static readonly string WeakPassword = "PasswordTooShort";
+        public static readonly string NoSuchElement = "The item you are looking for was not found.";
+        public static readonly string InvalidEmail = "The email entered is not a valid email.";
+        public static readonly string MissingFields = "Please enter all fields in the form.";
+        public static readonly string SessionTimeout = "Your login session has timed out.";
+        public static readonly string SessionNotFound = "Your login session has timed out.";
+        public static readonly string AlreadyExists = "A user with that username or email already exists.";
+        public static readonly string WeakPassword = "Your password be at least 8 characters long.";
     }
 }

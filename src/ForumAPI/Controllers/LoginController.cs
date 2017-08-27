@@ -50,6 +50,12 @@ namespace ForumAPI.Controllers
             }
             if (DataHandler.IsCorrectPassword(login.Password, user))
             {
+                if (user.Status == UserStatus.Deactivated)
+                {
+                    user.Status = UserStatus.Active;
+                    database.SaveChanges();
+                }
+
                 if (user.PasswordProtocolVersion < DataHandler.CurrentPasswordProtocolVersion)
                 {
                     DataHandler.PopulatePasswordData(user, login.Password);
